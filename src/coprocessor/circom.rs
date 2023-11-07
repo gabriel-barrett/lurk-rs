@@ -1,3 +1,4 @@
+/*
 // # Usage of circom coprocessors.
 //
 // See `examples/circom.rs` for a quick example of how to declare a circom coprocessor.
@@ -178,7 +179,7 @@ Then run `lurk coprocessor --name {name} <{}_FOLDER>` to instantiate a new gadge
     }
 
     impl<F: LurkField, C: CircomGadget<F>> CircomCoprocessor<F, C> {
-        /// Creates a [CircomConfig] by loading in the data in `<CIRCOM_DIR>/<gadget.name>/*`
+        /// Creates a [CircomConfig] by loading in the data in `<CIRCOM_DIR>/<gadget.name>/`
         pub fn create(gadget: C) -> Result<Self> {
             validate_gadget(&gadget)?;
 
@@ -205,3 +206,4 @@ Then run `lurk coprocessor --name {name} <{}_FOLDER>` to instantiate a new gadge
         }
     }
 }
+*/
