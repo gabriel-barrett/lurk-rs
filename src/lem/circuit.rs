@@ -658,10 +658,10 @@ fn synthesize_block<F: LurkField, CS: ConstraintSystem<F>, C: Coprocessor<F>>(
                 };
                 let mut output_ptrs = Vec::with_capacity(out.len());
                 for (z_ptr, var) in output_z_ptrs.into_iter().zip(out.iter()) {
-                    let ptr =
-                        AllocatedPtr::alloc(&mut cs.namespace(|| format!("var: {var}")), || {
-                            Ok(z_ptr)
-                        })?;
+                    let ptr = AllocatedPtr::alloc_strict(
+                        &mut cs.namespace(|| format!("var: {var}")),
+                        z_ptr,
+                    )?;
                     bound_allocations.insert_ptr(var.clone(), ptr.clone());
                     output_ptrs.push(ptr);
                 }
@@ -921,12 +921,11 @@ fn synthesize_block<F: LurkField, CS: ConstraintSystem<F>, C: Coprocessor<F>>(
                     panic!("Expected bits")
                 };
                 let trunc_bits = &trunc_bits[0..*n as usize];
-                let trunc = AllocatedNum::alloc(cs.namespace(|| "trunc"), || {
+                let trunc = AllocatedNum::alloc_strict(cs.namespace(|| "trunc"), {
                     let b = if *n < 64 { (1 << *n) - 1 } else { u64::MAX };
                     a.hash()
                         .get_value()
-                        .map(|a| F::from_u64(a.to_u64_unchecked() & b))
-                        .ok_or(SynthesisError::AssignmentMissing)
+                        .map_or(F::ZERO, |a| F::from_u64(a.to_u64_unchecked() & b))
                 })?;
                 implies_pack(
                     cs.namespace(|| "implies_trunc"),
@@ -1253,9 +1252,9 @@ impl Func {
         let mut output = Vec::with_capacity(frame.output.len());
         for (i, ptr) in frame.output.iter().enumerate() {
             let zptr = store.hash_ptr(ptr);
-            output.push(AllocatedPtr::alloc(
+            output.push(AllocatedPtr::alloc_strict(
                 &mut cs.namespace(|| format!("var: output[{}]", i)),
-                || Ok(zptr),
+                zptr,
             )?);
         }
         Ok(output)
@@ -1273,7 +1272,7 @@ impl Func {
             let param = &self.input_params[i];
             let zptr = store.hash_ptr(ptr);
             let ptr =
-                AllocatedPtr::alloc(&mut cs.namespace(|| format!("var: {param}")), || Ok(zptr))?;
+                AllocatedPtr::alloc_strict(&mut cs.namespace(|| format!("var: {param}")), zptr)?;
             bound_allocations.insert_ptr(param.clone(), ptr);
         }
         Ok(())

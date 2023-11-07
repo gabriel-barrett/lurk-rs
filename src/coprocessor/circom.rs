@@ -39,7 +39,7 @@ Available circom gadgets:
     {available}
 
 If you want to setup a new circom gadget `{name}`, place your circom files in a designated folder and
-create a file called `{name}.circom`. The circom binary expects `{}_FOLDER>/{name}.circom` 
+create a file called `{name}.circom`. The circom binary expects `{}_FOLDER>/{name}.circom`
 as the input file; in this file you must declare your circom main component.
 
 Then run `lurk coprocessor --name {name} <{}_FOLDER>` to instantiate a new gadget `{name}`.",

@@ -86,6 +86,21 @@ impl<F: LurkField> AllocatedPtr<F> {
         })
     }
 
+    pub fn alloc_strict<CS: ConstraintSystem<F>, T: Tag>(
+        cs: &mut CS,
+        value: ZPtr<T, F>,
+    ) -> Result<Self, SynthesisError> {
+        let hash = value.value();
+        let alloc_tag = AllocatedNum::alloc_strict(&mut cs.namespace(|| "tag"), value.tag_field())?;
+
+        let alloc_hash = AllocatedNum::alloc_strict(&mut cs.namespace(|| "hash"), *hash)?;
+
+        Ok(AllocatedPtr {
+            tag: alloc_tag,
+            hash: alloc_hash,
+        })
+    }
+
     pub fn alloc_tag<CS: ConstraintSystem<F>>(
         cs: &mut CS,
         tag: F,

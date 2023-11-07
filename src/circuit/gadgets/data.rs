@@ -387,7 +387,7 @@ pub fn allocate_constant<F: LurkField, CS: ConstraintSystem<F>>(
     cs: &mut CS,
     val: F,
 ) -> AllocatedNum<F> {
-    let allocated = AllocatedNum::<F>::alloc_infallible(cs.namespace(|| "allocate"), || val);
+    let allocated = AllocatedNum::<F>::alloc_infallible_strict(cs.namespace(|| "allocate"), val);
 
     // allocated * 1 = val
     cs.enforce(

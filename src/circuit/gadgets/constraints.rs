@@ -217,11 +217,10 @@ pub(crate) fn sub<F: PrimeField, CS: ConstraintSystem<F>>(
     a: &AllocatedNum<F>,
     b: &AllocatedNum<F>,
 ) -> Result<AllocatedNum<F>, SynthesisError> {
-    let res = AllocatedNum::alloc(cs.namespace(|| "sub_num"), || {
-        let mut tmp = a.get_value().ok_or(SynthesisError::AssignmentMissing)?;
-        tmp.sub_assign(&b.get_value().ok_or(SynthesisError::AssignmentMissing)?);
-
-        Ok(tmp)
+    let res = AllocatedNum::alloc_strict(cs.namespace(|| "sub_num"), {
+        let mut tmp = a.get_value().unwrap_or(F::ZERO);
+        tmp.sub_assign(&b.get_value().unwrap_or(F::ZERO));
+        tmp
     })?;
 
     // a - b = res
@@ -283,11 +282,10 @@ pub(crate) fn mul<F: PrimeField, CS: ConstraintSystem<F>>(
     a: &AllocatedNum<F>,
     b: &AllocatedNum<F>,
 ) -> Result<AllocatedNum<F>, SynthesisError> {
-    let res = AllocatedNum::alloc(cs.namespace(|| "mul_num"), || {
-        let mut tmp = a.get_value().ok_or(SynthesisError::AssignmentMissing)?;
-        tmp.mul_assign(&b.get_value().ok_or(SynthesisError::AssignmentMissing)?);
-
-        Ok(tmp)
+    let res = AllocatedNum::alloc_strict(cs.namespace(|| "mul_num"), {
+        let mut tmp = a.get_value().unwrap_or(F::ZERO);
+        tmp.mul_assign(&b.get_value().unwrap_or(F::ZERO));
+        tmp
     })?;
 
     // a * b = res
@@ -301,15 +299,15 @@ pub(crate) fn div<F: PrimeField, CS: ConstraintSystem<F>>(
     a: &AllocatedNum<F>,
     b: &AllocatedNum<F>,
 ) -> Result<AllocatedNum<F>, SynthesisError> {
-    let res = AllocatedNum::alloc(cs.namespace(|| "div_num"), || {
-        let mut tmp = a.get_value().ok_or(SynthesisError::AssignmentMissing)?;
-        let inv = (b.get_value().ok_or(SynthesisError::AssignmentMissing)?).invert();
+    let res = AllocatedNum::alloc_strict(cs.namespace(|| "div_num"), {
+        let mut tmp = a.get_value().unwrap_or(F::ZERO);
+        let inv = (b.get_value().unwrap_or(F::ONE)).invert();
 
         if inv.is_some().into() {
             inv.map(|i| tmp.mul_assign(i));
-            Ok(tmp)
+            tmp
         } else {
-            Err(SynthesisError::DivisionByZero)
+            return Err(SynthesisError::DivisionByZero);
         }
     })?;
 
@@ -359,14 +357,11 @@ pub(crate) fn pick<F: PrimeField, CS: ConstraintSystem<F>>(
     a: &AllocatedNum<F>,
     b: &AllocatedNum<F>,
 ) -> Result<AllocatedNum<F>, SynthesisError> {
-    let c = AllocatedNum::alloc(cs.namespace(|| "pick result"), || {
-        if condition
-            .get_value()
-            .ok_or(SynthesisError::AssignmentMissing)?
-        {
-            Ok(a.get_value().ok_or(SynthesisError::AssignmentMissing)?)
+    let c = AllocatedNum::alloc_strict(cs.namespace(|| "pick result"), {
+        if condition.get_value().unwrap_or(false) {
+            a.get_value().unwrap_or(F::ZERO)
         } else {
-            Ok(b.get_value().ok_or(SynthesisError::AssignmentMissing)?)
+            b.get_value().unwrap_or(F::ZERO)
         }
     })?;
 
@@ -389,14 +384,11 @@ pub(crate) fn pick_const<F: PrimeField, CS: ConstraintSystem<F>>(
     a: F,
     b: F,
 ) -> Result<AllocatedNum<F>, SynthesisError> {
-    let c = AllocatedNum::alloc(cs.namespace(|| "pick result"), || {
-        if condition
-            .get_value()
-            .ok_or(SynthesisError::AssignmentMissing)?
-        {
-            Ok(a)
+    let c = AllocatedNum::alloc_strict(cs.namespace(|| "pick result"), {
+        if condition.get_value().unwrap_or(false) {
+            a
         } else {
-            Ok(b)
+            b
         }
     })?;
 
@@ -417,11 +409,11 @@ pub(crate) fn boolean_to_num<F: PrimeField, CS: ConstraintSystem<F>>(
     mut cs: CS,
     bit: &Boolean,
 ) -> Result<AllocatedNum<F>, SynthesisError> {
-    let num = AllocatedNum::alloc(cs.namespace(|| "Allocate num"), || {
-        if bit.get_value().ok_or(SynthesisError::AssignmentMissing)? {
-            Ok(F::ONE)
+    let num = AllocatedNum::alloc_strict(cs.namespace(|| "Allocate num"), {
+        if bit.get_value().unwrap_or(false) {
+            F::ONE
         } else {
-            Ok(F::ZERO)
+            F::ZERO
         }
     })?;
 
@@ -458,21 +450,18 @@ pub fn alloc_equal<CS: ConstraintSystem<F>, F: PrimeField>(
     );
 
     // Inverse of `a - b`, if it exists, otherwise one.
-    let q = cs.alloc(
-        || "q",
-        || {
-            let a_val = a.get_value().ok_or(SynthesisError::AssignmentMissing)?;
-            let b_val = b.get_value().ok_or(SynthesisError::AssignmentMissing)?;
-            let tmp0 = a_val - b_val;
-            let tmp1 = tmp0.invert();
+    let q = cs.alloc_strict(|| "q", {
+        let a_val = a.get_value().unwrap_or(F::ZERO);
+        let b_val = b.get_value().unwrap_or(F::ONE);
+        let tmp0 = a_val - b_val;
+        let tmp1 = tmp0.invert();
 
-            if tmp1.is_some().into() {
-                Ok(tmp1.unwrap())
-            } else {
-                Ok(F::ONE)
-            }
-        },
-    )?;
+        if tmp1.is_some().into() {
+            tmp1.unwrap()
+        } else {
+            F::ONE
+        }
+    })?;
 
     // (a - b + result) * q = 1.
     // This enforces that diff and result are not both 0.
@@ -515,19 +504,16 @@ pub(crate) fn alloc_equal_const<CS: ConstraintSystem<F>, F: PrimeField>(
     );
 
     // Inverse of `diff`, if it exists, otherwise one.
-    let q = cs.alloc(
-        || "q",
-        || {
-            let tmp0 = diff.ok_or(SynthesisError::AssignmentMissing)?;
-            let tmp1 = tmp0.invert();
+    let q = cs.alloc_strict(|| "q", {
+        let tmp0 = diff.unwrap_or(F::ZERO);
+        let tmp1 = tmp0.invert();
 
-            if tmp1.is_some().into() {
-                Ok(tmp1.unwrap())
-            } else {
-                Ok(F::ONE)
-            }
-        },
-    )?;
+        if tmp1.is_some().into() {
+            tmp1.unwrap()
+        } else {
+            F::ONE
+        }
+    })?;
 
     // ((a - b) + result) * q = 1.
     // This enforces that diff (a - b) and result are not both 0.
@@ -576,17 +562,14 @@ pub(crate) fn alloc_num_is_zero<CS: ConstraintSystem<F>, F: PrimeField>(
     );
 
     // Inverse of `x`, if it exists, otherwise one.
-    let q = cs.alloc(
-        || "q",
-        || {
-            let tmp = x.invert();
-            if tmp.is_some().into() {
-                Ok(tmp.unwrap())
-            } else {
-                Ok(F::ONE)
-            }
-        },
-    )?;
+    let q = cs.alloc_strict(|| "q", {
+        let tmp = x.invert();
+        if tmp.is_some().into() {
+            tmp.unwrap()
+        } else {
+            F::ONE
+        }
+    })?;
 
     // (x + result) * q = 1.
     // This enforces that x and result are not both 0.
@@ -781,26 +764,21 @@ pub(crate) fn implies_unequal<CS: ConstraintSystem<F>, F: PrimeField>(
     // must exist `c` such that `c * (a-b) = premise`, enforcing the difference
     // only when `premise = 1`; otherwise the constraint is trivially satisfied
     // for `c = 0`
-    let q = cs.alloc(
-        || "q",
-        || {
-            let premise = premise
-                .get_value()
-                .ok_or(SynthesisError::AssignmentMissing)?;
-            if premise {
-                let a = a.get_value().ok_or(SynthesisError::AssignmentMissing)?;
-                let b = b.get_value().ok_or(SynthesisError::AssignmentMissing)?;
-                let inv = (a - b).invert();
-                if inv.is_some().into() {
-                    Ok(inv.unwrap())
-                } else {
-                    Ok(F::ZERO)
-                }
+    let q = cs.alloc_strict(|| "q", {
+        let premise = premise.get_value().unwrap_or(false);
+        if premise {
+            let a = a.get_value().unwrap_or(F::ZERO);
+            let b = b.get_value().unwrap_or(F::ZERO);
+            let inv = (a - b).invert();
+            if inv.is_some().into() {
+                inv.unwrap()
             } else {
-                Ok(F::ZERO)
+                F::ZERO
             }
-        },
-    )?;
+        } else {
+            F::ZERO
+        }
+    })?;
     let maybe_inverse = |lc| lc + q;
     let implication_lc = |lc| lc + a.get_variable() - b.get_variable();
     let premise = |_| premise.lc(CS::one(), F::ONE);
@@ -821,25 +799,20 @@ pub(crate) fn implies_unequal_const<CS: ConstraintSystem<F>, F: PrimeField>(
     // must exist `c` such that `c * (a-b) = premise`, enforcing the difference
     // only when `premise = 1`; otherwise the constraint is trivially satisfied
     // for `c = 0`
-    let q = cs.alloc(
-        || "q",
-        || {
-            let premise = premise
-                .get_value()
-                .ok_or(SynthesisError::AssignmentMissing)?;
-            if premise {
-                let a = a.get_value().ok_or(SynthesisError::AssignmentMissing)?;
-                let inv = (a - b).invert();
-                if inv.is_some().into() {
-                    Ok(inv.unwrap())
-                } else {
-                    Ok(F::ZERO)
-                }
+    let q = cs.alloc_strict(|| "q", {
+        let premise = premise.get_value().unwrap_or(false);
+        if premise {
+            let a = a.get_value().unwrap_or(F::ZERO);
+            let inv = (a - b).invert();
+            if inv.is_some().into() {
+                inv.unwrap()
             } else {
-                Ok(F::ZERO)
+                F::ZERO
             }
-        },
-    )?;
+        } else {
+            F::ZERO
+        }
+    })?;
     let maybe_inverse = |lc| lc + q;
     let implication_lc = |lc| lc + a.get_variable() - (b, CS::one());
     let premise = |_| premise.lc(CS::one(), F::ONE);
