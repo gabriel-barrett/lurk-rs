@@ -1438,11 +1438,10 @@ fn test_prove_zero_arg_lambda2() {
 fn test_prove_zero_arg_lambda3() {
     let s = &Store::<Fr>::default();
     let expected = {
-        let arg = s.intern_user_symbol("x");
+        let args = s.list(vec![s.intern_user_symbol("x")]);
         let num = Ptr::num_u64(123);
-        let body = s.list(vec![num]);
         let env = s.intern_nil();
-        s.intern_fun(arg, body, env)
+        s.intern_fun(args, num, env)
     };
     let terminal = s.cont_terminal();
     nova_test_full_aux::<_, _, M1<'_, _>>(
@@ -3109,9 +3108,9 @@ fn test_prove_dotted_syntax_error() {
 fn test_prove_call_literal_fun() {
     let s = &Store::<Fr>::default();
     let empty_env = s.intern_nil();
-    let arg = s.intern_user_symbol("x");
-    let body = s.read_with_default_state("((+ x 1))").unwrap();
-    let fun = s.intern_3_ptrs(Tag::Expr(ExprTag::Fun), arg, body, empty_env);
+    let args = s.list(vec![s.intern_user_symbol("x")]);
+    let body = s.read_with_default_state("(+ x 1)").unwrap();
+    let fun = s.intern_4_ptrs(Tag::Expr(ExprTag::Fun), args, body, empty_env, Ptr::dummy());
     let input = Ptr::num_u64(9);
     let expr = s.list(vec![fun, input]);
     let res = Ptr::num_u64(10);

@@ -904,10 +904,10 @@ fn reduce(cprocs: &[(&Symbol, usize)]) -> Func {
                             match val2.tag {
                                 Expr::Fun => {
                                     // if `val2` is a closure, then extend its environment
-                                    let (arg, body, closed_env) = decons3(val2);
+                                    let (arg, body, closed_env, _foo) = decons4(val2);
                                     let extended: Expr::Cons = cons2(binding, closed_env);
                                     // and return the extended closure
-                                    let fun: Expr::Fun = cons3(arg, body, extended);
+                                    let fun: Expr::Fun = cons4(arg, body, extended, foo);
                                     return (fun, env, cont, apply)
                                 }
                             };
@@ -985,7 +985,7 @@ fn reduce(cprocs: &[(&Symbol, usize)]) -> Func {
                                                 let vars_is_nil = eq_tag(vars, nil);
                                                 let vars_is_cons_or_nil = or(vars_is_cons, vars_is_nil);
                                                 if vars_is_cons_or_nil {
-                                                    let fun: Expr::Fun = cons3(vars, body, env);
+                                                    let fun: Expr::Fun = cons4(vars, body, env, foo);
                                                     return (fun, env, cont, apply)
                                                 }
                                                 return (expr, env, err, errctrl)
@@ -1236,7 +1236,7 @@ fn apply_cont(cprocs: &[(&Symbol, usize)], ivc: bool) -> Func {
                         match result.tag {
                             Expr::Fun => {
                                 let (args, args_env, continuation, _foo) = decons4(cont);
-                                let (vars, body, fun_env) = decons3(result);
+                                let (vars, body, fun_env, _foo) = decons4(result);
                                 match args.tag {
                                     Expr::Cons => {
                                         match vars.tag {
@@ -1272,7 +1272,7 @@ fn apply_cont(cprocs: &[(&Symbol, usize)], ivc: bool) -> Func {
                         let (function, args, args_env, continuation) = decons4(cont);
                         match function.tag {
                             Expr::Fun => {
-                                let (vars, body, fun_env) = decons3(function);
+                                let (vars, body, fun_env, _foo) = decons4(function);
                                 // vars must be non-empty, so:
                                 let (var, rest_vars) = decons2(vars);
                                 match var.tag {
@@ -1289,7 +1289,7 @@ fn apply_cont(cprocs: &[(&Symbol, usize)], ivc: bool) -> Func {
                                             let cont: Cont::Call = cons4(args, args_env, continuation, foo);
                                             return (body, ext_env, cont, ret)
                                         }
-                                        let ext_function: Expr::Fun = cons3(rest_vars, body, ext_env);
+                                        let ext_function: Expr::Fun = cons4(rest_vars, body, ext_env, foo);
                                         if args_empty {
                                             // Undersaturated call
                                             return (ext_function, ext_env, continuation, ret)
@@ -1745,15 +1745,15 @@ mod tests {
             func.slots_count,
             SlotsCounter {
                 hash4: 14,
-                hash6: 4,
-                hash8: 3,
+                hash6: 0,
+                hash8: 6,
                 commitment: 1,
                 bit_decomp: 3,
             }
         );
         assert_eq!(cs.num_inputs(), 1);
-        assert_eq!(cs.aux().len(), 9003);
-        assert_eq!(cs.num_constraints(), 10807);
+        assert_eq!(cs.aux().len(), 8819);
+        assert_eq!(cs.num_constraints(), 10629);
         assert_eq!(func.num_constraints(&store), cs.num_constraints());
     }
 }
