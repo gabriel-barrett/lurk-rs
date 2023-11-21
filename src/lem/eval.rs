@@ -672,20 +672,6 @@ fn reduce(cprocs: &[(&Symbol, usize)]) -> Func {
         let env: Expr::Cons = cons2(smaller_rec_env, smaller_env);
         return (env)
     });
-    let extract_arg = func!(extract_arg(args): 2 => {
-        match args.tag {
-            Expr::Nil => {
-                let dummy = Symbol("dummy");
-                let nil = Symbol("nil");
-                let nil = cast(nil, Expr::Nil);
-                return (dummy, nil)
-            }
-            Expr::Cons => {
-                let (arg, rest) = decons2(args);
-                return (arg, rest)
-            }
-        }
-    });
     let expand_bindings = func!(expand_bindings(head, body, body1, rest_bindings): 1 => {
         match rest_bindings.tag {
             Expr::Nil => {
@@ -989,22 +975,23 @@ fn reduce(cprocs: &[(&Symbol, usize)]) -> Func {
                         }
                         match symbol head {
                             "lambda" => {
-                                let (args, body) = car_cdr(rest);
-                                let (arg, cdr_args) = extract_arg(args);
-
-                                match arg.tag {
-                                    Expr::Sym => {
-                                        match cdr_args.tag {
+                                let (vars, rest) = car_cdr(rest);
+                                match rest.tag {
+                                    Expr::Cons => {
+                                        let (body, end) = decons2(rest);
+                                        match end.tag {
                                             Expr::Nil => {
-                                                let function: Expr::Fun = cons3(arg, body, env);
-                                                return (function, env, cont, apply)
+                                                let vars_is_cons = eq_tag(vars, cons);
+                                                let vars_is_nil = eq_tag(vars, nil);
+                                                let vars_is_cons_or_nil = or(vars_is_cons, vars_is_nil);
+                                                if vars_is_cons_or_nil {
+                                                    let fun: Expr::Fun = cons3(vars, body, env);
+                                                    return (fun, env, cont, apply)
+                                                }
+                                                return (expr, env, err, errctrl)
                                             }
                                         };
-                                        let inner: Expr::Cons = cons2(cdr_args, body);
-                                        let l: Expr::Cons = cons2(head, inner);
-                                        let inner_body: Expr::Cons = cons2(l, nil);
-                                        let function: Expr::Fun = cons3(arg, inner_body, env);
-                                        return (function, env, cont, apply)
+                                        return (expr, env, err, errctrl)
                                     }
                                 };
                                 return (expr, env, err, errctrl)
@@ -1249,32 +1236,32 @@ fn apply_cont(cprocs: &[(&Symbol, usize)], ivc: bool) -> Func {
                         match result.tag {
                             Expr::Fun => {
                                 let (args, args_env, continuation, _foo) = decons4(cont);
+                                let (vars, body, fun_env) = decons3(result);
                                 match args.tag {
                                     Expr::Cons => {
-                                        let (arg, rest_args) = decons2(args);
-                                        let newer_cont: Cont::Call2 = cons4(result, rest_args, args_env, continuation);
-                                        return (arg, args_env, newer_cont, ret)
-                                    }
-                                    Expr::Nil => {
-                                        let (var, body, fun_env) = decons3(result);
-                                        match symbol var {
-                                            "dummy" => {
-                                                match body.tag {
-                                                    Expr::Nil => {
-                                                        return (result, env, err, errctrl)
-                                                    }
-                                                };
-                                                let (body_form, end) = decons2(body);
-                                                match end.tag {
-                                                    Expr::Nil => {
-                                                        return (body_form, fun_env, continuation, ret)
-                                                    }
-                                                };
+                                        match vars.tag {
+                                            Expr::Nil => {
+                                                // Cannot apply non-zero number of arguments to a zero argument function
                                                 return (result, env, err, errctrl)
                                             }
-                                        };
-                                        // TODO should this be an error or should we return the function?
-                                        return (result, env, continuation, ret)
+                                            Expr::Cons => {
+                                                let (arg, rest_args) = decons2(args);
+                                                let newer_cont: Cont::Call2 = cons4(result, rest_args, args_env, continuation);
+                                                return (arg, args_env, newer_cont, ret)
+                                            }
+                                        }
+                                    }
+                                    Expr::Nil => {
+                                        match vars.tag {
+                                            Expr::Nil => {
+                                                return (body, fun_env, continuation, ret)
+                                            }
+                                            Expr::Cons => {
+                                                // TODO should we not fail here in an analogous way to the non-zero application
+                                                // on a zero argument function case?
+                                                return (result, env, continuation, ret)
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -1285,29 +1272,31 @@ fn apply_cont(cprocs: &[(&Symbol, usize)], ivc: bool) -> Func {
                         let (function, args, args_env, continuation) = decons4(cont);
                         match function.tag {
                             Expr::Fun => {
-                                let (var, body, fun_env) = decons3(function);
-                                match symbol var {
-                                    "dummy" => {
-                                        return (result, env, err, errctrl)
-                                    }
-                                };
-                                match body.tag {
-                                    Expr::Nil => {
-                                        return (result, env, err, errctrl)
-                                    }
-                                };
-                                let (body_form, end) = decons2(body);
-                                match end.tag {
-                                    Expr::Nil => {
+                                let (vars, body, fun_env) = decons3(function);
+                                // vars must be non-empty, so:
+                                let (var, rest_vars) = decons2(vars);
+                                match var.tag {
+                                    Expr::Sym => {
                                         let binding: Expr::Cons = cons2(var, result);
-                                        let newer_env: Expr::Cons = cons2(binding, fun_env);
-                                        match args.tag {
-                                            Expr::Nil => {
-                                                return (body_form, newer_env, continuation, ret)
+                                        let ext_env: Expr::Cons = cons2(binding, fun_env);
+                                        let rest_vars_empty = eq_tag(rest_vars, nil);
+                                        let args_empty = eq_tag(args, nil);
+                                        if rest_vars_empty {
+                                            if args_empty {
+                                                return (body, ext_env, continuation, ret)
                                             }
-                                        };
-                                        let cont: Cont::Call = cons4(args, args_env, continuation, foo);
-                                        return (body_form, newer_env, cont, ret)
+                                            // Oversaturated call
+                                            let cont: Cont::Call = cons4(args, args_env, continuation, foo);
+                                            return (body, ext_env, cont, ret)
+                                        }
+                                        let ext_function: Expr::Fun = cons3(rest_vars, body, ext_env);
+                                        if args_empty {
+                                            // Undersaturated call
+                                            return (ext_function, ext_env, continuation, ret)
+                                        }
+                                        let (arg, rest_args) = decons2(args);
+                                        let cont: Cont::Call2 = cons4(ext_function, rest_args, args_env, continuation);
+                                        return (arg, args_env, cont, ret)
                                     }
                                 };
                                 return (result, env, err, errctrl)
@@ -1756,15 +1745,15 @@ mod tests {
             func.slots_count,
             SlotsCounter {
                 hash4: 14,
-                hash6: 3,
+                hash6: 4,
                 hash8: 3,
                 commitment: 1,
                 bit_decomp: 3,
             }
         );
         assert_eq!(cs.num_inputs(), 1);
-        assert_eq!(cs.aux().len(), 8664);
-        assert_eq!(cs.num_constraints(), 10489);
+        assert_eq!(cs.aux().len(), 9003);
+        assert_eq!(cs.num_constraints(), 10807);
         assert_eq!(func.num_constraints(&store), cs.num_constraints());
     }
 }
