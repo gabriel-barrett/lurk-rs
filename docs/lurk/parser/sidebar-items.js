@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error"],"mod":["base","error","position","string","syntax"],"static":["LURK_WHITESPACE"],"type":["ParseResult","Span"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["nova","supernova"],"trait":["CEKState","EvaluationStore","FrameLike","MultiFrameTrait","NIVCProver","Provable","Prover"]};

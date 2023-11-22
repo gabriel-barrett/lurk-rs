@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"attr":["serde_test"],"derive":["Coproc","TryFromRepr"],"macro":["let_store","lurk"]};

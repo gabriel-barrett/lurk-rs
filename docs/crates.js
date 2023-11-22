@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["lurk","lurk_macros","lurk_metrics"];

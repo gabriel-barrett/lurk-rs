@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Ctrl","Lit","Op","Tag"],"mod":["circuit","eval","multiframe","pointers","store"],"struct":["Block","Func","Var"],"type":["AString"]};
