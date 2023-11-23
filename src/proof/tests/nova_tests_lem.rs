@@ -3110,7 +3110,7 @@ fn test_prove_call_literal_fun() {
     let empty_env = s.intern_nil();
     let args = s.list(vec![s.intern_user_symbol("x")]);
     let body = s.read_with_default_state("(+ x 1)").unwrap();
-    let fun = s.intern_4_ptrs(Tag::Expr(ExprTag::Fun), args, body, empty_env, Ptr::dummy());
+    let fun = s.intern_3_ptrs(Tag::Expr(ExprTag::Fun), args, body, empty_env);
     let input = Ptr::num_u64(9);
     let expr = s.list(vec![fun, input]);
     let res = Ptr::num_u64(10);

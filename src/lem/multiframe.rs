@@ -667,12 +667,14 @@ impl<'a, F: LurkField, C: Coprocessor<F> + 'a> MultiFrameTrait<'a, F, C> for Mul
         ec: &EvalConfig<'_, F, C>,
     ) -> Result<Vec<Self::EvalFrame>, ProofError> {
         let cont = store.cont_outermost();
+        let ctrl = store.intern_lurk_symbol("reduce");
         let lurk_step = make_eval_step_from_config(ec);
         match evaluate_with_env_and_cont(
             Some((&lurk_step, ec.lang())),
             expr,
             env,
             cont,
+            ctrl,
             store,
             limit,
         ) {

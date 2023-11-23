@@ -426,7 +426,7 @@ impl<F: LurkField> Store<F> {
 
     #[inline]
     pub fn intern_fun(&self, arg: Ptr<F>, body: Ptr<F>, env: Ptr<F>) -> Ptr<F> {
-        self.intern_4_ptrs(Tag::Expr(Fun), arg, body, env, Ptr::dummy())
+        self.intern_3_ptrs(Tag::Expr(Fun), arg, body, env)
     }
 
     #[inline]
@@ -869,10 +869,10 @@ impl<F: LurkField> Ptr<F> {
                     Some(Some(u)) => format!("{u}u64"),
                     _ => "<Malformed U64>".into(),
                 },
-                Fun => match self.get_index4() {
+                Fun => match self.get_index3() {
                     None => "<Malformed Fun>".into(),
                     Some(idx) => {
-                        if let Some((vars, body, ..)) = store.fetch_4_ptrs(idx) {
+                        if let Some((vars, body, ..)) = store.fetch_3_ptrs(idx) {
                             match vars.tag() {
                                 Tag::Expr(Nil) => {
                                     format!("<FUNCTION () {}>", body.fmt_to_string(store, state))
