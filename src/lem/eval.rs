@@ -713,16 +713,6 @@ fn match_and_run_cproc(cprocs: &[(&Symbol, usize)]) -> Func {
 fn reduce(cprocs: &[(&Symbol, usize)]) -> Func {
     // Auxiliary functions
     let car_cdr = car_cdr();
-    let expand_bindings = func!(expand_bindings(head, body, body1, rest_bindings): 1 => {
-        match rest_bindings.tag {
-            Expr::Nil => {
-                return (body1)
-            }
-        };
-        let expanded_0: Expr::Cons = cons2(rest_bindings, body);
-        let expanded: Expr::Cons = cons2(head, expanded_0);
-        return (expanded)
-    });
     let get_unop = func!(get_unop(head): 1 => {
         let nil = Symbol("nil");
         let nil = cast(nil, Expr::Nil);
@@ -950,7 +940,7 @@ fn reduce(cprocs: &[(&Symbol, usize)]) -> Func {
                         let head_is_let_or_letrec_sym = or(head_is_let_sym, head_is_letrec_sym);
                         if head_is_let_or_letrec_sym {
                             let (bindings, body) = car_cdr(rest);
-                            let (body1, rest_body) = car_cdr(body);
+                            let (inner_body, rest_body) = car_cdr(body);
                             // Only a single body form allowed for now.
                             match body.tag {
                                 Expr::Nil => {
@@ -961,7 +951,7 @@ fn reduce(cprocs: &[(&Symbol, usize)]) -> Func {
                                 Expr::Nil => {
                                     match bindings.tag {
                                         Expr::Nil => {
-                                            return (body1, env, cont, reduce)
+                                            return (inner_body, env, cont, reduce)
                                         }
                                     };
                                     let (binding1, rest_bindings) = car_cdr(bindings);
@@ -973,12 +963,12 @@ fn reduce(cprocs: &[(&Symbol, usize)]) -> Func {
                                             if !end_is_nil {
                                                 return (expr, env, err, errctrl)
                                             }
-                                            let (expanded) = expand_bindings(head, body, body1, rest_bindings);
+                                            let var_bindings: Expr::Cons = cons2(var, rest_bindings);
                                             if head_is_let_sym {
-                                                let cont: Cont::Let = cons4(var, env, expanded, cont);
+                                                let cont: Cont::Let = cons4(var_bindings, env, inner_body, cont);
                                                 return (val, env, cont, reduce)
                                             }
-                                            let cont: Cont::LetRec = cons4(var, env, expanded, cont);
+                                            let cont: Cont::LetRec = cons4(var_bindings, env, inner_body, cont);
                                             return (val, env, cont, reduce)
                                         }
                                     };
@@ -1298,18 +1288,58 @@ fn apply_cont(cprocs: &[(&Symbol, usize)], ivc: bool) -> Func {
                 return (result, env, err, errctrl)
             }
             Cont::Let => {
-                let (var, saved_env, body, cont) = decons4(cont);
+                let (var_bindings, saved_env, inner_body, cont) = decons4(cont);
+                let (var, bindings) = decons2(var_bindings);
                 let binding: Expr::Cons = cons2(var, result);
                 let extended_env: Expr::Cons = cons2(binding, saved_env);
-                return (body, extended_env, cont, reduce)
+                match bindings.tag {
+                    Expr::Nil => {
+                        return (inner_body, extended_env, cont, reduce)
+                    }
+                };
+                let (binding1, rest_bindings) = car_cdr(bindings);
+                let (var, vals) = car_cdr(binding1);
+                match var.tag {
+                    Expr::Sym => {
+                        let (val, end) = car_cdr(vals);
+                        let end_is_nil = eq_tag(end, nil);
+                        if !end_is_nil {
+                            return (result, extended_env, err, errctrl)
+                        }
+                        let var_bindings: Expr::Cons = cons2(var, rest_bindings);
+                        let cont: Cont::Let = cons4(var_bindings, extended_env, inner_body, cont);
+                        return (val, extended_env, cont, reduce)
+                    }
+                };
+                return (result, extended_env, err, errctrl)
             }
             Cont::LetRec => {
-                let (var, saved_env, body, cont) = decons4(cont);
+                let (var_bindings, saved_env, inner_body, cont) = decons4(cont);
+                let (var, bindings) = decons2(var_bindings);
                 // This is a hack to signal that the binding came from a letrec
                 let var = cast(var, Expr::Thunk);
                 let binding: Expr::Cons = cons2(var, result);
                 let extended_env: Expr::Cons = cons2(binding, saved_env);
-                return (body, extended_env, cont, reduce)
+                match bindings.tag {
+                    Expr::Nil => {
+                        return (inner_body, extended_env, cont, reduce)
+                    }
+                };
+                let (binding1, rest_bindings) = car_cdr(bindings);
+                let (var, vals) = car_cdr(binding1);
+                match var.tag {
+                    Expr::Sym => {
+                        let (val, end) = car_cdr(vals);
+                        let end_is_nil = eq_tag(end, nil);
+                        if !end_is_nil {
+                            return (result, extended_env, err, errctrl)
+                        }
+                        let var_bindings: Expr::Cons = cons2(var, rest_bindings);
+                        let cont: Cont::LetRec = cons4(var_bindings, extended_env, inner_body, cont);
+                        return (val, extended_env, cont, reduce)
+                    }
+                };
+                return (result, extended_env, err, errctrl)
             }
             Cont::Unop => {
                 let comm: Expr::Comm;
@@ -1721,7 +1751,7 @@ mod tests {
                 // hash4 cost 289
                 // hash6 cost 337
                 // hash8 cost 388
-                hash4: 8,
+                hash4: 7,
                 hash6: 2,
                 hash8: 2,
                 commitment: 1,
@@ -1729,8 +1759,8 @@ mod tests {
             }
         );
         assert_eq!(cs.num_inputs(), 1);
-        assert_eq!(cs.aux().len(), 6200);
-        assert_eq!(cs.num_constraints(), 8130);
+        assert_eq!(cs.aux().len(), 5958);
+        assert_eq!(cs.num_constraints(), 8016);
     }
 
     #[test]
@@ -1745,7 +1775,7 @@ mod tests {
             func.slots_count,
             SlotsCounter {
                 // Would be hash4: 8+4+3 = 16
-                hash4: 8,
+                hash4: 7,
                 hash6: 2,
                 hash8: 1,
                 commitment: 0,
@@ -1753,8 +1783,8 @@ mod tests {
             }
         );
         assert_eq!(cs.num_inputs(), 1);
-        assert_eq!(cs.aux().len(), 3865);
-        assert_eq!(cs.num_constraints(), 4731);
+        assert_eq!(cs.aux().len(), 3567);
+        assert_eq!(cs.num_constraints(), 4429);
         // assert_eq!(func.num_constraints(&store), cs.num_constraints());
     }
 
@@ -1770,7 +1800,7 @@ mod tests {
             func.slots_count,
             SlotsCounter {
                 // Would be hash4: 5+4+6 = 15
-                hash4: 5,
+                hash4: 7,
                 hash6: 2,
                 hash8: 2,
                 commitment: 1,
@@ -1778,7 +1808,7 @@ mod tests {
             }
         );
         assert_eq!(cs.num_inputs(), 1);
-        assert_eq!(cs.aux().len(), 4873);
-        assert_eq!(cs.num_constraints(), 5867);
+        assert_eq!(cs.aux().len(), 5517);
+        assert_eq!(cs.num_constraints(), 6635);
     }
 }
