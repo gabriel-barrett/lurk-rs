@@ -296,18 +296,43 @@ pub fn make_eval_step_from_config<F: LurkField, C: Coprocessor<F>>(
 fn make_eval_step(cprocs: &[(&Symbol, usize)], ivc: bool) -> Func {
     let reduce = reduce(cprocs);
     let apply_cont = apply_cont(cprocs, ivc);
-
-    func!(step(expr, env, cont, ctrl): 4 => {
+    let skip_reduce = func!(skip_reduce(expr, ctrl): 1 => {
+        let t = Symbol("t");
         match symbol ctrl {
             "reduce" => {
-                let (expr, env, cont, ctrl) = reduce(expr, env, cont);
-                return (expr, env, cont, ctrl)
+                let nil = Symbol("nil");
+                match expr.tag {
+                    Expr::Sym => {
+                        let expr_is_nil = eq_val(expr, nil);
+                        let expr_is_t = eq_val(expr, t);
+                        let expr_is_nil_or_t = or(expr_is_nil, expr_is_t);
+                        if expr_is_nil_or_t {
+                            return (t)
+                        }
+                        return (nil)
+                    }
+                    Expr::Cons => {
+                        return (nil)
+                    }
+                };
+                return (t)
             }
             "apply-continuation" => {
-                let (expr, env, cont, ctrl) = apply_cont(expr, env, cont);
-                return (expr, env, cont, ctrl)
+                return (t)
             }
         }
+    });
+
+    func!(step(expr, env, cont, ctrl): 4 => {
+        let t = Symbol("t");
+        let (skip_reduce) = skip_reduce(expr, ctrl);
+        let skip_reduce = eq_tag(skip_reduce, t);
+        if skip_reduce {
+            let (expr, env, cont, ctrl) = apply_cont(expr, env, cont);
+            return (expr, env, cont, ctrl)
+        }
+        let (expr, env, cont, ctrl) = reduce(expr, env, cont);
+        return (expr, env, cont, ctrl)
     })
 }
 
@@ -812,20 +837,6 @@ fn reduce(cprocs: &[(&Symbol, usize)]) -> Func {
         };
         return (nil)
     });
-    let is_potentially_fun = func!(is_potentially_fun(head): 1 => {
-        let fun: Expr::Fun;
-        let cons: Expr::Cons;
-        let head_is_fun = eq_tag(head, fun);
-        let head_is_cons = eq_tag(head, cons);
-        let acc = or(head_is_fun, head_is_cons);
-        if acc {
-            let t = Symbol("t");
-            return (t)
-        }
-        let nil = Symbol("nil");
-        let nil = cast(nil, Expr::Nil);
-        return (nil)
-    });
     let is_cproc = is_cproc(cprocs);
     let lookup = func!(lookup(expr, env, found, binding): 4 => {
         let rec = Symbol("rec");
@@ -883,15 +894,6 @@ fn reduce(cprocs: &[(&Symbol, usize)]) -> Func {
             return (expr, env, cont, reduce)
         }
         let apply = Symbol("apply-continuation");
-        let sym: Expr::Sym;
-        let cons: Expr::Cons;
-
-        let expr_is_sym = eq_tag(expr, sym);
-        let expr_is_cons = eq_tag(expr, cons);
-        let acc_not_apply = or(expr_is_sym, expr_is_cons);
-        if !acc_not_apply {
-            return (expr, env, cont, apply)
-        }
         let errctrl = Symbol("error");
         let t = Symbol("t");
         let nil = Symbol("nil");
@@ -900,12 +902,6 @@ fn reduce(cprocs: &[(&Symbol, usize)]) -> Func {
 
         match expr.tag {
             Expr::Sym => {
-                let expr_is_nil = eq_val(expr, nil);
-                let expr_is_t = eq_val(expr, t);
-                let expr_is_nil_or_t = or(expr_is_nil, expr_is_t);
-                if expr_is_nil_or_t {
-                    return (expr, env, cont, apply)
-                }
                 let not_found = Symbol("not_found");
                 let (expr, env, found, binding) = lookup(expr, env, not_found, nil);
                 let (expr, env, found, binding) = lookup(expr, env, found, binding);
@@ -1130,13 +1126,8 @@ fn reduce(cprocs: &[(&Symbol, usize)]) -> Func {
                 };
 
                 // head -> fn, rest -> args
-                let (potentially_fun) = is_potentially_fun(head);
-                let eq_val = eq_val(potentially_fun, t);
-                if eq_val {
-                    let cont: Cont::Call = cons4(rest, env, cont, foo);
-                    return (head, env, cont, reduce);
-                }
-                return (expr, env, err, errctrl)
+                let cont: Cont::Call = cons4(rest, env, cont, foo);
+                return (head, env, cont, reduce);
             }
         }
     })
@@ -1738,8 +1729,8 @@ mod tests {
             }
         );
         assert_eq!(cs.num_inputs(), 1);
-        assert_eq!(cs.aux().len(), 6211);
-        assert_eq!(cs.num_constraints(), 8160);
+        assert_eq!(cs.aux().len(), 6200);
+        assert_eq!(cs.num_constraints(), 8130);
     }
 
     #[test]
@@ -1762,8 +1753,8 @@ mod tests {
             }
         );
         assert_eq!(cs.num_inputs(), 1);
-        assert_eq!(cs.aux().len(), 3892);
-        assert_eq!(cs.num_constraints(), 4791);
+        assert_eq!(cs.aux().len(), 3865);
+        assert_eq!(cs.num_constraints(), 4731);
         // assert_eq!(func.num_constraints(&store), cs.num_constraints());
     }
 
