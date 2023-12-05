@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lem/multiframe.rs`."><title>multiframe.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="lurk" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (2f8d81f9d 2023-11-21)" data-channel="nightly" data-search-js="search-21db098bdc95be9e.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f06f02fd918e3bb3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lem/multiframe.rs`."><title>multiframe.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c67e44d78ab2db17.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="lurk" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (0e2dac837 2023-12-04)" data-channel="nightly" data-search-js="search-5a66c239c06b3a66.js" data-settings-js="settings-fe03fdc259827cd2.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-77dede896d6ac08e.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1109,13 +1109,27 @@
 <a href="#1109" id="1109">1109</a>
 <a href="#1110" id="1110">1110</a>
 <a href="#1111" id="1111">1111</a>
+<a href="#1112" id="1112">1112</a>
+<a href="#1113" id="1113">1113</a>
+<a href="#1114" id="1114">1114</a>
+<a href="#1115" id="1115">1115</a>
+<a href="#1116" id="1116">1116</a>
+<a href="#1117" id="1117">1117</a>
+<a href="#1118" id="1118">1118</a>
+<a href="#1119" id="1119">1119</a>
+<a href="#1120" id="1120">1120</a>
+<a href="#1121" id="1121">1121</a>
+<a href="#1122" id="1122">1122</a>
+<a href="#1123" id="1123">1123</a>
+<a href="#1124" id="1124">1124</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>abomonation::Abomonation;
 <span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>bellpepper::util_cs::witness_cs::WitnessCS;
 <span class="kw">use </span>bellpepper_core::{num::AllocatedNum, Circuit, ConstraintSystem, SynthesisError};
 <span class="kw">use </span>elsa::sync::FrozenMap;
 <span class="kw">use </span>ff::PrimeField;
-<span class="kw">use </span>nova::{supernova::NonUniformCircuit, traits::Group};
+<span class="kw">use </span>nova::{supernova::NonUniformCircuit, traits::Engine};
+<span class="kw">use </span>once_cell::sync::OnceCell;
 <span class="kw">use </span>rayon::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::sync::Arc;
 
@@ -1127,7 +1141,7 @@
     eval::lang::Lang,
     field::{LanguageField, LurkField},
     proof::{
-        nova::{CurveCycleEquipped, G1, G2},
+        nova::{CurveCycleEquipped, E1, E2},
         supernova::{FoldingConfig, C2},
         CEKState, EvaluationStore, FrameLike, MultiFrameTrait, Provable,
     },
@@ -1156,10 +1170,11 @@
     <span class="doccomment">/// Cached coprocessor functions according to the `folding_config`. Holds
     /// `None` in case of IVC
     </span>cprocs: <span class="prelude-ty">Option</span>&lt;Arc&lt;[Func]&gt;&gt;,
-    input: <span class="prelude-ty">Option</span>&lt;Vec&lt;Ptr&lt;F&gt;&gt;&gt;,
-    output: <span class="prelude-ty">Option</span>&lt;Vec&lt;Ptr&lt;F&gt;&gt;&gt;,
-    frames: <span class="prelude-ty">Option</span>&lt;Vec&lt;Frame&lt;F&gt;&gt;&gt;,
-    cached_witness: <span class="prelude-ty">Option</span>&lt;WitnessCS&lt;F&gt;&gt;,
+    input: <span class="prelude-ty">Option</span>&lt;Vec&lt;Ptr&gt;&gt;,
+    output: <span class="prelude-ty">Option</span>&lt;Vec&lt;Ptr&gt;&gt;,
+    frames: <span class="prelude-ty">Option</span>&lt;Vec&lt;Frame&gt;&gt;,
+    <span class="doccomment">/// Cached witness and output for this `MultiFrame`
+    </span>cached_witness: OnceCell&lt;(WitnessCS&lt;F&gt;, Vec&lt;AllocatedNum&lt;F&gt;&gt;)&gt;,
     num_frames: usize,
     folding_config: Arc&lt;FoldingConfig&lt;F, C&gt;&gt;,
     pc: usize,
@@ -1181,20 +1196,20 @@
     }
 }
 
-<span class="kw">impl</span>&lt;F: LurkField&gt; CEKState&lt;Ptr&lt;F&gt;, Ptr&lt;F&gt;&gt; <span class="kw">for </span>Vec&lt;Ptr&lt;F&gt;&gt; {
-    <span class="kw">fn </span>expr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Ptr&lt;F&gt; {
+<span class="kw">impl </span>CEKState&lt;Ptr, Ptr&gt; <span class="kw">for </span>Vec&lt;Ptr&gt; {
+    <span class="kw">fn </span>expr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Ptr {
         <span class="kw-2">&amp;</span><span class="self">self</span>[<span class="number">0</span>]
     }
-    <span class="kw">fn </span>env(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Ptr&lt;F&gt; {
+    <span class="kw">fn </span>env(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Ptr {
         <span class="kw-2">&amp;</span><span class="self">self</span>[<span class="number">1</span>]
     }
-    <span class="kw">fn </span>cont(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Ptr&lt;F&gt; {
+    <span class="kw">fn </span>cont(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Ptr {
         <span class="kw-2">&amp;</span><span class="self">self</span>[<span class="number">2</span>]
     }
 }
 
-<span class="kw">impl</span>&lt;F: LurkField&gt; FrameLike&lt;Ptr&lt;F&gt;, Ptr&lt;F&gt;&gt; <span class="kw">for </span>Frame&lt;F&gt; {
-    <span class="kw">type </span>FrameIO = Vec&lt;Ptr&lt;F&gt;&gt;;
+<span class="kw">impl </span>FrameLike&lt;Ptr, Ptr&gt; <span class="kw">for </span>Frame {
+    <span class="kw">type </span>FrameIO = Vec&lt;Ptr&gt;;
     <span class="kw">fn </span>input(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::FrameIO {
         <span class="kw-2">&amp;</span><span class="self">self</span>.input
     }
@@ -1204,8 +1219,8 @@
 }
 
 <span class="kw">impl</span>&lt;F: LurkField&gt; EvaluationStore <span class="kw">for </span>Store&lt;F&gt; {
-    <span class="kw">type </span>Ptr = Ptr&lt;F&gt;;
-    <span class="kw">type </span>ContPtr = Ptr&lt;F&gt;;
+    <span class="kw">type </span>Ptr = Ptr;
+    <span class="kw">type </span>ContPtr = Ptr;
     <span class="kw">type </span>Error = anyhow::Error;
 
     <span class="kw">fn </span>read(<span class="kw-2">&amp;</span><span class="self">self</span>, expr: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Ptr, <span class="self">Self</span>::Error&gt; {
@@ -1235,7 +1250,7 @@
 </span><span class="kw">fn </span>assert_eq_ptrs_aptrs&lt;F: LurkField&gt;(
     store: <span class="kw-2">&amp;</span>Store&lt;F&gt;,
     blank: bool,
-    ptrs: <span class="kw-2">&amp;</span>[Ptr&lt;F&gt;],
+    ptrs: <span class="kw-2">&amp;</span>[Ptr],
     aptrs: <span class="kw-2">&amp;</span>[AllocatedPtr&lt;F&gt;],
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), SynthesisError&gt; {
     <span class="macro">assert_eq!</span>(ptrs.len(), aptrs.len());
@@ -1282,7 +1297,7 @@
 /// with dummy data, we cache their (dummy) witnesses for extra speed
 </span><span class="kw">fn </span>generate_slots_witnesses&lt;F: LurkField&gt;(
     store: <span class="kw-2">&amp;</span>Store&lt;F&gt;,
-    frames: <span class="kw-2">&amp;</span>[Frame&lt;F&gt;],
+    frames: <span class="kw-2">&amp;</span>[Frame],
     num_slots_per_frame: usize,
     parallel: bool,
 ) -&gt; Vec&lt;Arc&lt;SlotWitness&lt;F&gt;&gt;&gt; {
@@ -1361,7 +1376,7 @@
     g: <span class="kw-2">&amp;</span>GlobalAllocator&lt;F&gt;,
     store: <span class="kw-2">&amp;</span>Store&lt;F&gt;,
     input: <span class="kw-2">&amp;</span>[AllocatedPtr&lt;F&gt;],
-    frames: <span class="kw-2">&amp;</span>[Frame&lt;F&gt;],
+    frames: <span class="kw-2">&amp;</span>[Frame],
     func: <span class="kw-2">&amp;</span>Func,
     lang: <span class="kw-2">&amp;</span>Lang&lt;F, C&gt;,
     slots_witnesses_num_slots_per_frame: <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span>[Arc&lt;SlotWitness&lt;F&gt;&gt;], usize)&gt;,
@@ -1400,7 +1415,7 @@
     g: <span class="kw-2">&amp;</span>GlobalAllocator&lt;F&gt;,
     store: <span class="kw-2">&amp;</span>Store&lt;F&gt;,
     input: Vec&lt;AllocatedPtr&lt;F&gt;&gt;,
-    frames: <span class="kw-2">&amp;</span>[Frame&lt;F&gt;],
+    frames: <span class="kw-2">&amp;</span>[Frame],
     func: <span class="kw-2">&amp;</span>Func,
     lang: <span class="kw-2">&amp;</span>Lang&lt;F, C&gt;,
     slots_witnesses: <span class="kw-2">&amp;</span>[Arc&lt;SlotWitness&lt;F&gt;&gt;],
@@ -1478,8 +1493,8 @@
 /// function. For efficiency, `frames` should have enough capacity to avoid
 /// reallocations
 </span><span class="kw">fn </span>pad_frames&lt;F: LurkField, C: Coprocessor&lt;F&gt;&gt;(
-    frames: <span class="kw-2">&amp;mut </span>Vec&lt;Frame&lt;F&gt;&gt;,
-    input: <span class="kw-2">&amp;</span>[Ptr&lt;F&gt;],
+    frames: <span class="kw-2">&amp;mut </span>Vec&lt;Frame&gt;,
+    input: <span class="kw-2">&amp;</span>[Ptr],
     lurk_step: <span class="kw-2">&amp;</span>Func,
     lang: <span class="kw-2">&amp;</span>Lang&lt;F, C&gt;,
     size: usize,
@@ -1494,47 +1509,46 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, F: LurkField, C: Coprocessor&lt;F&gt; + <span class="lifetime">&#39;a</span>&gt; MultiFrameTrait&lt;<span class="lifetime">&#39;a</span>, F, C&gt; <span class="kw">for </span>MultiFrame&lt;<span class="lifetime">&#39;a</span>, F, C&gt; {
-    <span class="kw">type </span>Ptr = Ptr&lt;F&gt;;
-    <span class="kw">type </span>ContPtr = Ptr&lt;F&gt;;
+    <span class="kw">type </span>Ptr = Ptr;
+    <span class="kw">type </span>ContPtr = Ptr;
     <span class="kw">type </span>Store = Store&lt;F&gt;;
     <span class="kw">type </span>StoreError = store::Error;
-    <span class="kw">type </span>EvalFrame = Frame&lt;F&gt;;
-    <span class="kw">type </span>CircuitFrame = Frame&lt;F&gt;;
+    <span class="kw">type </span>EvalFrame = Frame;
+    <span class="kw">type </span>CircuitFrame = Frame;
     <span class="kw">type </span>GlobalAllocation = GlobalAllocator&lt;F&gt;;
     <span class="kw">type </span>AllocatedIO = Vec&lt;AllocatedPtr&lt;F&gt;&gt;;
 
-    <span class="kw">fn </span>emitted(_store: <span class="kw-2">&amp;</span>Store&lt;F&gt;, eval_frame: <span class="kw-2">&amp;</span><span class="self">Self</span>::EvalFrame) -&gt; Vec&lt;Ptr&lt;F&gt;&gt; {
+    <span class="kw">fn </span>emitted(_store: <span class="kw-2">&amp;</span>Store&lt;F&gt;, eval_frame: <span class="kw-2">&amp;</span><span class="self">Self</span>::EvalFrame) -&gt; Vec&lt;Ptr&gt; {
         eval_frame.emitted.to_vec()
     }
 
     <span class="kw">fn </span>io_to_scalar_vector(
         store: <span class="kw-2">&amp;</span><span class="self">Self</span>::Store,
-        io: <span class="kw-2">&amp;</span>&lt;<span class="self">Self</span>::EvalFrame <span class="kw">as </span>FrameLike&lt;Ptr&lt;F&gt;, Ptr&lt;F&gt;&gt;&gt;::FrameIO,
+        io: <span class="kw-2">&amp;</span>&lt;<span class="self">Self</span>::EvalFrame <span class="kw">as </span>FrameLike&lt;Ptr, Ptr&gt;&gt;::FrameIO,
     ) -&gt; Vec&lt;F&gt; {
         store.to_scalar_vector(io)
     }
 
-    <span class="kw">fn </span>compute_witness(<span class="kw-2">&amp;</span><span class="self">self</span>, s: <span class="kw-2">&amp;</span>Store&lt;F&gt;) -&gt; WitnessCS&lt;F&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>wcs = WitnessCS::new();
+    <span class="kw">fn </span>cache_witness(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <span class="kw-2">&amp;</span>Store&lt;F&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), SynthesisError&gt; {
+        <span class="kw">let _ </span>= <span class="self">self</span>.cached_witness.get_or_try_init(|| {
+            <span class="kw">let </span><span class="kw-2">mut </span>wcs = WitnessCS::new();
 
-        <span class="kw">let </span>z_scalar = s.to_scalar_vector(<span class="self">self</span>.input.as_ref().unwrap());
+            <span class="kw">let </span>z_scalar = s.to_scalar_vector(<span class="self">self</span>.input.as_ref().unwrap());
 
-        <span class="kw">let </span><span class="kw-2">mut </span>bogus_cs = WitnessCS::&lt;F&gt;::new();
-        <span class="kw">let </span>z: Vec&lt;AllocatedNum&lt;F&gt;&gt; = z_scalar
-            .iter()
-            .map(|x| AllocatedNum::alloc(<span class="kw-2">&amp;mut </span>bogus_cs, || <span class="prelude-val">Ok</span>(<span class="kw-2">*</span>x)).unwrap())
-            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+            <span class="kw">let </span><span class="kw-2">mut </span>bogus_cs = WitnessCS::&lt;F&gt;::new();
+            <span class="kw">let </span>z: Vec&lt;AllocatedNum&lt;F&gt;&gt; = z_scalar
+                .iter()
+                .map(|x| AllocatedNum::alloc_infallible(<span class="kw-2">&amp;mut </span>bogus_cs, || <span class="kw-2">*</span>x))
+                .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-        <span class="kw">let _ </span>= nova::traits::circuit::StepCircuit::synthesize(<span class="self">self</span>, <span class="kw-2">&amp;mut </span>wcs, z.as_slice());
-
-        wcs
+            <span class="kw">let </span>output =
+                nova::traits::circuit::StepCircuit::synthesize(<span class="self">self</span>, <span class="kw-2">&amp;mut </span>wcs, z.as_slice())<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, SynthesisError&gt;((wcs, output))
+        })<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn </span>cached_witness(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="prelude-ty">Option</span>&lt;WitnessCS&lt;F&gt;&gt; {
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>.cached_witness
-    }
-
-    <span class="kw">fn </span>output(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self</span>::EvalFrame <span class="kw">as </span>FrameLike&lt;Ptr&lt;F&gt;, Ptr&lt;F&gt;&gt;&gt;::FrameIO&gt; {
+    <span class="kw">fn </span>output(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self</span>::EvalFrame <span class="kw">as </span>FrameLike&lt;Ptr, Ptr&gt;&gt;::FrameIO&gt; {
         <span class="kw-2">&amp;</span><span class="self">self</span>.output
     }
 
@@ -1622,7 +1636,7 @@
             input: <span class="prelude-val">None</span>,
             output: <span class="prelude-val">None</span>,
             frames: <span class="prelude-val">None</span>,
-            cached_witness: <span class="prelude-val">None</span>,
+            cached_witness: OnceCell::new(),
             num_frames,
             folding_config,
             pc,
@@ -1631,14 +1645,14 @@
     }
 
     <span class="kw">fn </span>from_frames(
-        frames: <span class="kw-2">&amp;</span>[Frame&lt;F&gt;],
+        frames: <span class="kw-2">&amp;</span>[Frame],
         store: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::Store,
-        folding_config: <span class="kw-2">&amp;</span>Arc&lt;FoldingConfig&lt;F, C&gt;&gt;,
+        folding_config: Arc&lt;FoldingConfig&lt;F, C&gt;&gt;,
     ) -&gt; Vec&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>reduction_count = folding_config.reduction_count();
         <span class="kw">let </span><span class="kw-2">mut </span>multi_frames =
             Vec::with_capacity((frames.len() + reduction_count - <span class="number">1</span>) / reduction_count);
-        <span class="kw">match </span><span class="kw-2">&amp;**</span>folding_config {
+        <span class="kw">match </span><span class="kw-2">&amp;*</span>folding_config {
             FoldingConfig::IVC(lang, <span class="kw">_</span>) =&gt; {
                 <span class="kw">let </span>lurk_step = Arc::new(make_eval_step_from_config(<span class="kw-2">&amp;</span>EvalConfig::new_ivc(lang)));
                 <span class="kw">for </span>chunk <span class="kw">in </span>frames.chunks(reduction_count) {
@@ -1670,7 +1684,7 @@
                         input: <span class="prelude-val">Some</span>(chunk[<span class="number">0</span>].input.to_vec()),
                         output: <span class="prelude-val">Some</span>(output),
                         frames: <span class="prelude-val">Some</span>(inner_frames),
-                        cached_witness: <span class="prelude-val">None</span>,
+                        cached_witness: OnceCell::new(),
                         num_frames: reduction_count,
                         folding_config: folding_config.clone(),
                         pc: <span class="number">0</span>,
@@ -1755,7 +1769,7 @@
                         input: <span class="prelude-val">Some</span>(input),
                         output: <span class="prelude-val">Some</span>(output),
                         frames: <span class="prelude-val">Some</span>(frames_to_add),
-                        cached_witness: <span class="prelude-val">None</span>,
+                        cached_witness: OnceCell::new(),
                         num_frames,
                         folding_config: folding_config.clone(),
                         pc,
@@ -1793,7 +1807,7 @@
     }
 
     <span class="kw">fn </span>significant_frame_count(frames: <span class="kw-2">&amp;</span>[<span class="self">Self</span>::EvalFrame]) -&gt; usize {
-        <span class="kw">let </span>stop_cond = |output: <span class="kw-2">&amp;</span>[Ptr&lt;F&gt;]| {
+        <span class="kw">let </span>stop_cond = |output: <span class="kw-2">&amp;</span>[Ptr]| {
             <span class="macro">matches!</span>(
                 output[<span class="number">2</span>].tag(),
                 Tag::Cont(ContTag::Terminal | ContTag::Error)
@@ -1809,70 +1823,69 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, F: LurkField, C: Coprocessor&lt;F&gt;&gt; Circuit&lt;F&gt; <span class="kw">for </span>MultiFrame&lt;<span class="lifetime">&#39;a</span>, F, C&gt; {
     <span class="kw">fn </span>synthesize&lt;CS: ConstraintSystem&lt;F&gt;&gt;(<span class="self">self</span>, cs: <span class="kw-2">&amp;mut </span>CS) -&gt; <span class="prelude-ty">Result</span>&lt;(), SynthesisError&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>synth =
-            |store: <span class="kw-2">&amp;</span>Store&lt;F&gt;, frames: <span class="kw-2">&amp;</span>[Frame&lt;F&gt;], input: <span class="kw-2">&amp;</span>[Ptr&lt;F&gt;], output: <span class="kw-2">&amp;</span>[Ptr&lt;F&gt;]| {
-                <span class="kw">let </span><span class="kw-2">mut </span>allocated_input = Vec::with_capacity(input.len());
-                <span class="kw">for </span>(i, ptr) <span class="kw">in </span>input.iter().enumerate() {
-                    <span class="kw">let </span>z_ptr = store.hash_ptr(ptr);
+        <span class="kw">let </span><span class="kw-2">mut </span>synth = |store: <span class="kw-2">&amp;</span>Store&lt;F&gt;, frames: <span class="kw-2">&amp;</span>[Frame], input: <span class="kw-2">&amp;</span>[Ptr], output: <span class="kw-2">&amp;</span>[Ptr]| {
+            <span class="kw">let </span><span class="kw-2">mut </span>allocated_input = Vec::with_capacity(input.len());
+            <span class="kw">for </span>(i, ptr) <span class="kw">in </span>input.iter().enumerate() {
+                <span class="kw">let </span>z_ptr = store.hash_ptr(ptr);
 
-                    <span class="kw">let </span>allocated_tag = AllocatedNum::alloc_infallible(
-                        <span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;allocated tag for input {i}&quot;</span>)),
-                        || z_ptr.tag_field(),
-                    );
-                    allocated_tag
-                        .inputize(<span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;inputized tag for input {i}&quot;</span>)))<span class="question-mark">?</span>;
+                <span class="kw">let </span>allocated_tag = AllocatedNum::alloc_infallible(
+                    <span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;allocated tag for input {i}&quot;</span>)),
+                    || z_ptr.tag_field(),
+                );
+                allocated_tag
+                    .inputize(<span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;inputized tag for input {i}&quot;</span>)))<span class="question-mark">?</span>;
 
-                    <span class="kw">let </span>allocated_hash = AllocatedNum::alloc_infallible(
-                        <span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;allocated hash for input {i}&quot;</span>)),
-                        || <span class="kw-2">*</span>z_ptr.value(),
-                    );
-                    allocated_hash
-                        .inputize(<span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;inputized hash for input {i}&quot;</span>)))<span class="question-mark">?</span>;
+                <span class="kw">let </span>allocated_hash = AllocatedNum::alloc_infallible(
+                    <span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;allocated hash for input {i}&quot;</span>)),
+                    || <span class="kw-2">*</span>z_ptr.value(),
+                );
+                allocated_hash
+                    .inputize(<span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;inputized hash for input {i}&quot;</span>)))<span class="question-mark">?</span>;
 
-                    allocated_input.push(AllocatedPtr::from_parts(allocated_tag, allocated_hash));
-                }
+                allocated_input.push(AllocatedPtr::from_parts(allocated_tag, allocated_hash));
+            }
 
-                <span class="kw">let </span><span class="kw-2">mut </span>allocated_output = Vec::with_capacity(output.len());
-                <span class="kw">for </span>(i, ptr) <span class="kw">in </span>output.iter().enumerate() {
-                    <span class="kw">let </span>z_ptr = store.hash_ptr(ptr);
+            <span class="kw">let </span><span class="kw-2">mut </span>allocated_output = Vec::with_capacity(output.len());
+            <span class="kw">for </span>(i, ptr) <span class="kw">in </span>output.iter().enumerate() {
+                <span class="kw">let </span>z_ptr = store.hash_ptr(ptr);
 
-                    <span class="kw">let </span>allocated_tag = AllocatedNum::alloc_infallible(
-                        <span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;allocated tag for output {i}&quot;</span>)),
-                        || z_ptr.tag_field(),
-                    );
-                    allocated_tag
-                        .inputize(<span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;inputized tag for output {i}&quot;</span>)))<span class="question-mark">?</span>;
+                <span class="kw">let </span>allocated_tag = AllocatedNum::alloc_infallible(
+                    <span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;allocated tag for output {i}&quot;</span>)),
+                    || z_ptr.tag_field(),
+                );
+                allocated_tag
+                    .inputize(<span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;inputized tag for output {i}&quot;</span>)))<span class="question-mark">?</span>;
 
-                    <span class="kw">let </span>allocated_hash = AllocatedNum::alloc_infallible(
-                        <span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;allocated hash for output {i}&quot;</span>)),
-                        || <span class="kw-2">*</span>z_ptr.value(),
-                    );
-                    allocated_hash
-                        .inputize(<span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;inputized hash for output {i}&quot;</span>)))<span class="question-mark">?</span>;
+                <span class="kw">let </span>allocated_hash = AllocatedNum::alloc_infallible(
+                    <span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;allocated hash for output {i}&quot;</span>)),
+                    || <span class="kw-2">*</span>z_ptr.value(),
+                );
+                allocated_hash
+                    .inputize(<span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;inputized hash for output {i}&quot;</span>)))<span class="question-mark">?</span>;
 
-                    allocated_output.push(AllocatedPtr::from_parts(allocated_tag, allocated_hash));
-                }
+                allocated_output.push(AllocatedPtr::from_parts(allocated_tag, allocated_hash));
+            }
 
-                <span class="kw">let </span>g = <span class="self">self</span>.lurk_step.alloc_globals(cs, store)<span class="question-mark">?</span>;
+            <span class="kw">let </span>g = <span class="self">self</span>.lurk_step.alloc_globals(cs, store)<span class="question-mark">?</span>;
 
-                <span class="kw">let </span>allocated_output_result =
-                    <span class="self">self</span>.synthesize_frames(cs, store, allocated_input, frames, <span class="kw-2">&amp;</span>g)<span class="question-mark">?</span>;
+            <span class="kw">let </span>allocated_output_result =
+                <span class="self">self</span>.synthesize_frames(cs, store, allocated_input, frames, <span class="kw-2">&amp;</span>g)<span class="question-mark">?</span>;
 
-                <span class="macro">assert_eq!</span>(allocated_output.len(), allocated_output_result.len());
+            <span class="macro">assert_eq!</span>(allocated_output.len(), allocated_output_result.len());
 
-                <span class="kw">for </span>(i, (o_res, o)) <span class="kw">in </span>allocated_output_result
-                    .iter()
-                    .zip(allocated_output)
-                    .enumerate()
-                {
-                    o_res.enforce_equal(
-                        <span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;outer output {i} is correct&quot;</span>)),
-                        <span class="kw-2">&amp;</span>o,
-                    );
-                }
+            <span class="kw">for </span>(i, (o_res, o)) <span class="kw">in </span>allocated_output_result
+                .iter()
+                .zip(allocated_output)
+                .enumerate()
+            {
+                o_res.enforce_equal(
+                    <span class="kw-2">&amp;mut </span>cs.namespace(|| <span class="macro">format!</span>(<span class="string">&quot;outer output {i} is correct&quot;</span>)),
+                    <span class="kw-2">&amp;</span>o,
+                );
+            }
 
-                <span class="prelude-val">Ok</span>(())
-            };
+            <span class="prelude-val">Ok</span>(())
+        };
 
         <span class="kw">match </span><span class="self">self</span>.store {
             <span class="prelude-val">Some</span>(store) =&gt; {
@@ -1889,8 +1902,8 @@
             }
             <span class="prelude-val">None </span>=&gt; {
                 <span class="macro">assert!</span>(<span class="self">self</span>.frames.is_none());
-                <span class="kw">let </span>dummy_io = [Ptr::dummy(); <span class="number">3</span>];
                 <span class="kw">let </span>store = Store::default();
+                <span class="kw">let </span>dummy_io = [store.dummy(); <span class="number">3</span>];
                 <span class="kw">let </span>blank_frame = Frame::blank(<span class="self">self</span>.get_func(), <span class="self">self</span>.pc);
                 <span class="kw">let </span>frames = <span class="macro">vec!</span>[blank_frame; <span class="self">self</span>.num_frames];
                 synth(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>frames, <span class="kw-2">&amp;</span>dummy_io, <span class="kw-2">&amp;</span>dummy_io)
@@ -1947,7 +1960,19 @@
     {
         <span class="macro">assert_eq!</span>(<span class="self">self</span>.arity(), z.len());
 
-        <span class="kw">let </span>n_ptrs = <span class="self">self</span>.arity() / <span class="number">2</span>;
+        <span class="kw">if </span>cs.is_witness_generator() {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>((w, output)) = <span class="self">self</span>.cached_witness.get() {
+                <span class="comment">// nothing has been inputized so far
+                </span><span class="macro">assert_eq!</span>(cs.inputs_slice(), <span class="kw-2">&amp;</span>[F::ONE]);
+                <span class="macro">assert_eq!</span>(w.inputs_slice(), <span class="kw-2">&amp;</span>[F::ONE]);
+                <span class="comment">// output must have the same length as the input
+                </span><span class="macro">assert_eq!</span>(output.len(), z.len());
+                cs.extend_aux(w.aux_slice());
+                <span class="kw">return </span><span class="prelude-val">Ok</span>(output.clone());
+            }
+        };
+
+        <span class="kw">let </span>n_ptrs = z.len() / <span class="number">2</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>input = Vec::with_capacity(n_ptrs);
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n_ptrs {
             input.push(AllocatedPtr::from_parts(
@@ -1975,7 +2000,7 @@
             </span>}
         };
 
-        <span class="kw">let </span><span class="kw-2">mut </span>output = Vec::with_capacity(<span class="self">self</span>.arity());
+        <span class="kw">let </span><span class="kw-2">mut </span>output = Vec::with_capacity(z.len());
         <span class="kw">for </span>ptr <span class="kw">in </span>output_ptrs {
             output.push(ptr.tag().clone());
             output.push(ptr.hash().clone());
@@ -2012,12 +2037,12 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, F, C&gt; NonUniformCircuit&lt;G1&lt;F&gt;, G2&lt;F&gt;, MultiFrame&lt;<span class="lifetime">&#39;a</span>, F, C&gt;, C2&lt;F&gt;&gt; <span class="kw">for </span>MultiFrame&lt;<span class="lifetime">&#39;a</span>, F, C&gt;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, F, C&gt; NonUniformCircuit&lt;E1&lt;F&gt;, E2&lt;F&gt;, MultiFrame&lt;<span class="lifetime">&#39;a</span>, F, C&gt;, C2&lt;F&gt;&gt; <span class="kw">for </span>MultiFrame&lt;<span class="lifetime">&#39;a</span>, F, C&gt;
 <span class="kw">where
     </span>F: CurveCycleEquipped + LurkField,
     C: Coprocessor&lt;F&gt; + <span class="lifetime">&#39;a</span>,
-    &lt;&lt;G1&lt;F&gt; <span class="kw">as </span>Group&gt;::Scalar <span class="kw">as </span>PrimeField&gt;::Repr: Abomonation,
-    &lt;&lt;G2&lt;F&gt; <span class="kw">as </span>Group&gt;::Scalar <span class="kw">as </span>PrimeField&gt;::Repr: Abomonation,
+    &lt;&lt;E1&lt;F&gt; <span class="kw">as </span>Engine&gt;::Scalar <span class="kw">as </span>PrimeField&gt;::Repr: Abomonation,
+    &lt;&lt;E2&lt;F&gt; <span class="kw">as </span>Engine&gt;::Scalar <span class="kw">as </span>PrimeField&gt;::Repr: Abomonation,
 {
     <span class="kw">fn </span>num_circuits(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
         <span class="macro">assert_eq!</span>(<span class="self">self</span>.pc, <span class="number">0</span>);
@@ -2040,7 +2065,8 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>bellpepper_core::test_cs::TestConstraintSystem;
-    <span class="kw">use </span>nova::provider::bn256_grumpkin::{bn256::Scalar <span class="kw">as </span>Bn, grumpkin::Scalar <span class="kw">as </span>Gr};
+    <span class="kw">use </span>halo2curves::bn256::Fr <span class="kw">as </span>Bn;
+    <span class="kw">use </span>halo2curves::grumpkin::Fr <span class="kw">as </span>Gr;
     <span class="kw">use </span>pasta_curves::{Fp, Fq};
 
     <span class="kw">use crate</span>::{
@@ -2211,7 +2237,7 @@
         <span class="kw">let </span>folding_config = Arc::new(FoldingConfig::new_ivc(lang.clone(), <span class="number">1</span>));
 
         store.hydrate_z_cache();
-        MultiFrame::from_frames(<span class="kw-2">&amp;</span>[frame], <span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>folding_config)
+        MultiFrame::from_frames(<span class="kw-2">&amp;</span>[frame], <span class="kw-2">&amp;</span>store, folding_config)
             .pop()
             .unwrap()
             .synthesize(<span class="kw-2">&amp;mut </span>cs)
