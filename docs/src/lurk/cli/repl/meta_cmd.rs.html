@@ -1,5 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cli/repl/meta_cmd.rs`."><title>meta_cmd.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="lurk" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (5ac4c8a63 2023-12-20)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
-    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cli/repl/meta_cmd.rs`."><title>meta_cmd.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-4e54bb2b497cc83f.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="lurk" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (595bc6f00 2024-01-05)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-0b2e2def73e61cbe.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../../lurk/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1126,76 +1127,11 @@
 <a href="#1125" id="1125">1125</a>
 <a href="#1126" id="1126">1126</a>
 <a href="#1127" id="1127">1127</a>
-<a href="#1128" id="1128">1128</a>
-<a href="#1129" id="1129">1129</a>
-<a href="#1130" id="1130">1130</a>
-<a href="#1131" id="1131">1131</a>
-<a href="#1132" id="1132">1132</a>
-<a href="#1133" id="1133">1133</a>
-<a href="#1134" id="1134">1134</a>
-<a href="#1135" id="1135">1135</a>
-<a href="#1136" id="1136">1136</a>
-<a href="#1137" id="1137">1137</a>
-<a href="#1138" id="1138">1138</a>
-<a href="#1139" id="1139">1139</a>
-<a href="#1140" id="1140">1140</a>
-<a href="#1141" id="1141">1141</a>
-<a href="#1142" id="1142">1142</a>
-<a href="#1143" id="1143">1143</a>
-<a href="#1144" id="1144">1144</a>
-<a href="#1145" id="1145">1145</a>
-<a href="#1146" id="1146">1146</a>
-<a href="#1147" id="1147">1147</a>
-<a href="#1148" id="1148">1148</a>
-<a href="#1149" id="1149">1149</a>
-<a href="#1150" id="1150">1150</a>
-<a href="#1151" id="1151">1151</a>
-<a href="#1152" id="1152">1152</a>
-<a href="#1153" id="1153">1153</a>
-<a href="#1154" id="1154">1154</a>
-<a href="#1155" id="1155">1155</a>
-<a href="#1156" id="1156">1156</a>
-<a href="#1157" id="1157">1157</a>
-<a href="#1158" id="1158">1158</a>
-<a href="#1159" id="1159">1159</a>
-<a href="#1160" id="1160">1160</a>
-<a href="#1161" id="1161">1161</a>
-<a href="#1162" id="1162">1162</a>
-<a href="#1163" id="1163">1163</a>
-<a href="#1164" id="1164">1164</a>
-<a href="#1165" id="1165">1165</a>
-<a href="#1166" id="1166">1166</a>
-<a href="#1167" id="1167">1167</a>
-<a href="#1168" id="1168">1168</a>
-<a href="#1169" id="1169">1169</a>
-<a href="#1170" id="1170">1170</a>
-<a href="#1171" id="1171">1171</a>
-<a href="#1172" id="1172">1172</a>
-<a href="#1173" id="1173">1173</a>
-<a href="#1174" id="1174">1174</a>
-<a href="#1175" id="1175">1175</a>
-<a href="#1176" id="1176">1176</a>
-<a href="#1177" id="1177">1177</a>
-<a href="#1178" id="1178">1178</a>
-<a href="#1179" id="1179">1179</a>
-<a href="#1180" id="1180">1180</a>
-<a href="#1181" id="1181">1181</a>
-<a href="#1182" id="1182">1182</a>
-<a href="#1183" id="1183">1183</a>
-<a href="#1184" id="1184">1184</a>
-<a href="#1185" id="1185">1185</a>
-<a href="#1186" id="1186">1186</a>
-<a href="#1187" id="1187">1187</a>
-<a href="#1188" id="1188">1188</a>
-<a href="#1189" id="1189">1189</a>
-<a href="#1190" id="1190">1190</a>
-<a href="#1191" id="1191">1191</a>
-<a href="#1192" id="1192">1192</a>
-<a href="#1193" id="1193">1193</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>::nova::traits::Engine;
 <span class="kw">use </span>abomonation::Abomonation;
 <span class="kw">use </span>anyhow::{anyhow, bail, Context, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>camino::Utf8PathBuf;
+<span class="kw">use </span>ff::PrimeField;
 <span class="kw">use </span>serde::{de::DeserializeOwned, Deserialize, Serialize};
 <span class="kw">use </span>std::{collections::HashMap, process};
 
@@ -1207,13 +1143,13 @@
         zstore::ZDag,
     },
     coprocessor::Coprocessor,
-    eval::lang::Coproc,
     field::LurkField,
     lem::{
         eval::evaluate_with_env_and_cont,
         multiframe::MultiFrame,
-        pointers::{Ptr, ZPtr},
-        Tag,
+        pointers::{Ptr, RawPtr, ZPtr},
+        store::expect_ptrs,
+        tag::Tag,
     },
     package::{Package, SymbolRef},
     proof::{
@@ -1229,19 +1165,24 @@
 
 <span class="kw">use </span><span class="kw">super</span>::Repl;
 
-<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">struct </span>MetaCmd&lt;F: LurkField&gt; {
+<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">struct </span>MetaCmd&lt;F: LurkField, C: Coprocessor&lt;F&gt; + Serialize + DeserializeOwned&gt; {
     name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
     summary: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
     format: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
     description: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>[<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str],
     example: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>[<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str],
-    <span class="kw">pub</span>(<span class="kw">super</span>) run: <span class="kw">fn</span>(repl: <span class="kw-2">&amp;mut </span>Repl&lt;F&gt;, args: <span class="kw-2">&amp;</span>Ptr) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;,
+    <span class="kw">pub</span>(<span class="kw">super</span>) run: <span class="kw">fn</span>(repl: <span class="kw-2">&amp;mut </span>Repl&lt;F, C&gt;, args: <span class="kw-2">&amp;</span>Ptr) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;,
 }
 
-<span class="kw">type </span>F = pasta_curves::pallas::Scalar; <span class="comment">// TODO: generalize this
-
-</span><span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>LOAD: MetaCmd&lt;F&gt; = MetaCmd {
+<span class="kw">impl</span>&lt;
+        F: CurveCycleEquipped + Serialize + DeserializeOwned,
+        C: Coprocessor&lt;F&gt; + Serialize + DeserializeOwned + <span class="lifetime">'static</span>,
+    &gt; MetaCmd&lt;F, C&gt;
+<span class="kw">where
+    </span>&lt;F <span class="kw">as </span>PrimeField&gt;::Repr: Abomonation,
+    &lt;&lt;&lt;F <span class="kw">as </span>CurveCycleEquipped&gt;::E2 <span class="kw">as </span>Engine&gt;::Scalar <span class="kw">as </span>PrimeField&gt;::Repr: Abomonation,
+{
+    <span class="kw">const </span>LOAD: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"load"</span>,
         summary: <span class="string">"Load lurk expressions from a file."</span>,
         format: <span class="string">"!(load &lt;string&gt;)"</span>,
@@ -1256,10 +1197,8 @@
             }
         },
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>DEF: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>DEF: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"def"</span>,
         summary: <span class="string">"Extends env with a non-recursive binding."</span>,
         format: <span class="string">"!(def &lt;binding&gt; &lt;body&gt;)"</span>,
@@ -1268,7 +1207,7 @@
             <span class="string">"The state's env is set to the result."</span>,
         ],
         example: <span class="kw-2">&amp;</span>[<span class="string">"!(def foo (lambda () 123))"</span>],
-        run: |repl: <span class="kw-2">&amp;mut </span>Repl&lt;F&gt;, args: <span class="kw-2">&amp;</span>Ptr| {
+        run: |repl: <span class="kw-2">&amp;mut </span>Repl&lt;F, C&gt;, args: <span class="kw-2">&amp;</span>Ptr| {
             <span class="kw">let </span>(first, second) = repl.peek2(args)<span class="question-mark">?</span>;
             <span class="kw">let </span>new_name = first.fmt_to_string(<span class="kw-2">&amp;</span>repl.store, <span class="kw-2">&amp;</span>repl.state.borrow());
             <span class="kw">let </span>l = repl.store.intern_lurk_symbol(<span class="string">"let"</span>);
@@ -1283,10 +1222,8 @@
             <span class="prelude-val">Ok</span>(())
         },
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>DEFREC: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>DEFREC: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"defrec"</span>,
         summary: <span class="string">"Extends the env with a recursive binding."</span>,
         format: <span class="string">"!(defrec &lt;binding&gt; &lt;body&gt;)"</span>,
@@ -1313,10 +1250,8 @@
             <span class="prelude-val">Ok</span>(())
         },
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>ASSERT: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>ASSERT: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"assert"</span>,
         summary: <span class="string">"Assert that an expression evaluates to true."</span>,
         format: <span class="string">"!(assert &lt;expr&gt;)"</span>,
@@ -1335,10 +1270,8 @@
             <span class="prelude-val">Ok</span>(())
         },
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>ASSERT_EQ: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>ASSERT_EQ: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"assert-eq"</span>,
         summary: <span class="string">"Assert that two expressions evaluate to the same value."</span>,
         format: <span class="string">"!(assert-eq &lt;expr&gt; &lt;expr&gt;)"</span>,
@@ -1366,10 +1299,8 @@
             <span class="prelude-val">Ok</span>(())
         },
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>ASSERT_EMITTED: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>ASSERT_EMITTED: MetaCmd&lt;F, C&gt; = MetaCmd {
         name:
             <span class="string">"assert-emitted"</span>,
         summary:
@@ -1405,10 +1336,8 @@
             <span class="prelude-val">Ok</span>(())
         },
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>ASSERT_ERROR: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>ASSERT_ERROR: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"assert-error"</span>,
         summary: <span class="string">"Assert that a evaluation of &lt;expr&gt; fails."</span>,
         format: <span class="string">"!(assert-error &lt;expr&gt;)"</span>,
@@ -1427,10 +1356,8 @@
             <span class="prelude-val">Ok</span>(())
         },
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>COMMIT: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>COMMIT: MetaCmd&lt;F, C&gt; = MetaCmd {
         name:
             <span class="string">"commit"</span>,
         summary:
@@ -1448,10 +1375,8 @@
             repl.hide(F::NON_HIDING_COMMITMENT_SECRET, first_io[<span class="number">0</span>])
         }
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>HIDE: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>HIDE: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"hide"</span>,
         summary: <span class="string">"Return and persist the commitment of &lt;exp&gt; using secret &lt;secret&gt;."</span>,
         format: <span class="string">"!(hide &lt;secret&gt; &lt;expr&gt;)"</span>,
@@ -1469,21 +1394,19 @@
             <span class="kw">let </span>(second_io, ..) = repl
                 .eval_expr(second)
                 .with_context(|| <span class="string">"evaluating second arg"</span>)<span class="question-mark">?</span>;
-            <span class="kw">let </span>Ptr::Atom(Tag::Expr(ExprTag::Num), secret) = first_io[<span class="number">0</span>] <span class="kw">else </span>{
+            <span class="kw">let </span>(Tag::Expr(ExprTag::Num), RawPtr::Atom(secret)) = first_io[<span class="number">0</span>].parts() <span class="kw">else </span>{
                 <span class="macro">bail!</span>(
                     <span class="string">"Secret must be a number. Got {}"</span>,
                     first_io[<span class="number">0</span>].fmt_to_string(<span class="kw-2">&amp;</span>repl.store, <span class="kw-2">&amp;</span>repl.state.borrow())
                 )
             };
-            <span class="kw">let </span>secret = <span class="kw-2">*</span>repl.store.expect_f(secret);
+            <span class="kw">let </span>secret = <span class="kw-2">*</span>repl.store.expect_f(<span class="kw-2">*</span>secret);
             repl.hide(secret, second_io[<span class="number">0</span>])<span class="question-mark">?</span>;
             <span class="prelude-val">Ok</span>(())
         },
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>FETCH: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>FETCH: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"fetch"</span>,
         summary: <span class="string">"Add data from a commitment to the repl store."</span>,
         format: <span class="string">"!(fetch &lt;commitment&gt;)"</span>,
@@ -1497,10 +1420,8 @@
             repl.fetch(<span class="kw-2">&amp;</span>hash, <span class="bool-val">false</span>)
         },
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>OPEN: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>OPEN: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"open"</span>,
         summary: <span class="string">"Open a commitment."</span>,
         format: <span class="string">"!(open &lt;commitment&gt;)"</span>,
@@ -1514,10 +1435,8 @@
             repl.fetch(<span class="kw-2">&amp;</span>hash, <span class="bool-val">true</span>)
         },
     };
-}
 
-<span class="kw">impl</span>&lt;F: LurkField&gt; MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>CLEAR: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>CLEAR: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"clear"</span>,
         summary: <span class="string">"Reset the current environment to be empty."</span>,
         format: <span class="string">"!(clear)"</span>,
@@ -1528,10 +1447,8 @@
             <span class="prelude-val">Ok</span>(())
         },
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>SET_ENV: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>SET_ENV: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"set-env"</span>,
         summary: <span class="string">"Set the env to the result of evaluating the first argument."</span>,
         format: <span class="string">"!(set-env &lt;expr&gt;)"</span>,
@@ -1544,10 +1461,8 @@
             <span class="prelude-val">Ok</span>(())
         },
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>PROVE: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>PROVE: MetaCmd&lt;F, C&gt; = MetaCmd {
         name:
             <span class="string">"prove"</span>,
         summary:
@@ -1570,14 +1485,8 @@
             <span class="prelude-val">Ok</span>(())
         }
     };
-}
 
-<span class="kw">impl</span>&lt;F: CurveCycleEquipped + Serialize + DeserializeOwned&gt; MetaCmd&lt;F&gt;
-<span class="kw">where
-    </span>&lt;&lt;E1&lt;F&gt; <span class="kw">as </span>Engine&gt;::Scalar <span class="kw">as </span>ff::PrimeField&gt;::Repr: Abomonation,
-    &lt;&lt;E2&lt;F&gt; <span class="kw">as </span>Engine&gt;::Scalar <span class="kw">as </span>ff::PrimeField&gt;::Repr: Abomonation,
-{
-    <span class="kw">const </span>VERIFY: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>VERIFY: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"verify"</span>,
         summary: <span class="string">"Verify a proof"</span>,
         format: <span class="string">"!(verify &lt;string&gt;)"</span>,
@@ -1590,15 +1499,13 @@
         run: |repl, args| {
             <span class="kw">let </span>first = repl.peek1(args)<span class="question-mark">?</span>;
             <span class="kw">let </span>proof_id = repl.get_string(<span class="kw-2">&amp;</span>first)<span class="question-mark">?</span>;
-            LurkProof::&lt;<span class="kw">_</span>, <span class="kw">_</span>, MultiFrame&lt;<span class="lifetime">'_</span>, <span class="kw">_</span>, Coproc&lt;F&gt;&gt;&gt;::verify_proof(
+            LurkProof::&lt;<span class="kw">_</span>, <span class="kw">_</span>, MultiFrame&lt;<span class="lifetime">'_</span>, <span class="kw">_</span>, C&gt;&gt;::verify_proof(
                 <span class="kw-2">&amp;</span>proof_id,
             )
         }
     };
-}
 
-<span class="kw">impl</span>&lt;F: LurkField&gt; MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>DEFPACKAGE: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>DEFPACKAGE: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"defpackage"</span>,
         summary: <span class="string">"Add a package to the state."</span>,
         format: <span class="string">"!(defpackage &lt;string|symbol&gt;)"</span>,
@@ -1618,10 +1525,8 @@
             <span class="prelude-val">Ok</span>(())
         },
     };
-}
 
-<span class="kw">impl</span>&lt;F: LurkField&gt; MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>IMPORT: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>IMPORT: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"import"</span>,
         summary: <span class="string">"Import a single or several packages."</span>,
         format: <span class="string">"!(import &lt;string|package&gt; ...)"</span>,
@@ -1651,10 +1556,8 @@
             <span class="prelude-val">Ok</span>(())
         },
     };
-}
 
-<span class="kw">impl</span>&lt;F: LurkField&gt; MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>IN_PACKAGE: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>IN_PACKAGE: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"in-package"</span>,
         summary: <span class="string">"set the current package."</span>,
         format: <span class="string">"!(in-package &lt;string|symbol&gt;)"</span>,
@@ -1687,10 +1590,8 @@
             }
         },
     };
-}
 
-<span class="kw">impl</span>&lt;F: LurkField&gt; MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>HELP: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>HELP: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"help"</span>,
         summary: <span class="string">"Print help message."</span>,
         format: <span class="string">"!(help &lt;string|symbol&gt;)"</span>,
@@ -1714,7 +1615,7 @@
                 Tag::Expr(ExprTag::Nil) =&gt; {
                     <span class="kw">use </span>itertools::Itertools;
                     <span class="macro">println!</span>(<span class="string">"Available commands:"</span>);
-                    <span class="kw">for </span>(<span class="kw">_</span>, i) <span class="kw">in </span>MetaCmd::cmds().iter().sorted_by_key(|x| x.<span class="number">0</span>) {
+                    <span class="kw">for </span>(<span class="kw">_</span>, i) <span class="kw">in </span>MetaCmd::&lt;F, C&gt;::cmds().iter().sorted_by_key(|x| x.<span class="number">0</span>) {
                         <span class="macro">println!</span>(<span class="string">"  {} - {}"</span>, i.name, i.summary);
                     }
                 }
@@ -1725,7 +1626,7 @@
     };
 
     <span class="kw">fn </span>meta_help(cmd: <span class="kw-2">&amp;</span>str) {
-        <span class="kw">match </span>MetaCmd::cmds().get(cmd) {
+        <span class="kw">match </span>MetaCmd::&lt;F, C&gt;::cmds().get(cmd) {
             <span class="prelude-val">Some</span>(i) =&gt; {
                 <span class="macro">println!</span>(<span class="string">"{} - {}"</span>, i.name, i.summary);
                 <span class="kw">for </span><span class="kw-2">&amp;</span>e <span class="kw">in </span>i.description.iter() {
@@ -1742,10 +1643,8 @@
             <span class="prelude-val">None </span>=&gt; <span class="macro">println!</span>(<span class="string">"unknown command {}"</span>, cmd),
         }
     }
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">fn </span>call(repl: <span class="kw-2">&amp;mut </span>Repl&lt;F&gt;, args: <span class="kw-2">&amp;</span>Ptr) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">fn </span>call(repl: <span class="kw-2">&amp;mut </span>Repl&lt;F, C&gt;, args: <span class="kw-2">&amp;</span>Ptr) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>(hash_ptr, args) = repl.store.car_cdr(args)<span class="question-mark">?</span>;
         <span class="kw">let </span>hash_expr = <span class="kw">match </span>hash_ptr.tag() {
             Tag::Expr(ExprTag::Cons) =&gt; hash_ptr,
@@ -1767,21 +1666,19 @@
         repl.handle_non_meta(repl.store.list(expr_vec))
     }
 
-    <span class="kw">const </span>CALL: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>CALL: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"call"</span>,
         summary: <span class="string">"Open a functional commitment then apply arguments to it"</span>,
         format: <span class="string">"!(call &lt;hash&gt; &lt;args&gt;)"</span>,
         description: <span class="kw-2">&amp;</span>[],
         example: <span class="kw-2">&amp;</span>[
             <span class="string">"(commit (lambda (x) x))"</span>,
-            <span class="string">"!(call 0x39a14e7823d7af7275e83f0cb74f80ca4217c6c6930761b0bbd6879b123dbbc2 0)"</span>,
+            <span class="string">"!(call 0x2f14c82533e8347d128b07e6610d0fc901f71418c2a6ea3e618cfe654f73f4b1 0)"</span>,
         ],
         run: <span class="self">Self</span>::call,
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>CHAIN: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>CHAIN: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"chain"</span>,
         summary: <span class="string">"Chain a functional commitment by applying the provided arguments to it"</span>,
         format: <span class="string">"!(chain &lt;hash&gt; &lt;args&gt;)"</span>,
@@ -1795,9 +1692,9 @@
                        (let ((counter (+ counter x)))
                          (cons counter (commit (add counter)))))))
                (add 0)))"</span>,
-            <span class="string">"!(chain 0x06042852d90bf409974d1ee3bc153c0f48ea5512c9b4f697561df9ad7b5abbe0 1)"</span>,
+            <span class="string">"!(chain 0x14cb06e2d3c594af90d5b670e73595791d7462b20442c24cd56ba2919947d769 1)"</span>,
         ],
-        run: |repl: <span class="kw-2">&amp;mut </span>Repl&lt;F&gt;, args: <span class="kw-2">&amp;</span>Ptr| {
+        run: |repl: <span class="kw-2">&amp;mut </span>Repl&lt;F, C&gt;, args: <span class="kw-2">&amp;</span>Ptr| {
             <span class="self">Self</span>::call(repl, args)<span class="question-mark">?</span>;
             <span class="kw">let </span>ev = repl
                 .get_evaluation()
@@ -1807,10 +1704,10 @@
                 .get_result()
                 .expect(<span class="string">"evaluation result must have been set"</span>);
             <span class="kw">let </span>(<span class="kw">_</span>, comm) = repl.store.car_cdr(result)<span class="question-mark">?</span>;
-            <span class="kw">let </span>Ptr::Atom(Tag::Expr(ExprTag::Comm), hash) = comm <span class="kw">else </span>{
+            <span class="kw">let </span>(Tag::Expr(ExprTag::Comm), RawPtr::Atom(hash)) = comm.parts() <span class="kw">else </span>{
                 <span class="macro">bail!</span>(<span class="string">"Second component of a chain must be a commitment"</span>)
             };
-            <span class="kw">let </span>hash = <span class="kw-2">*</span>repl.store.expect_f(hash);
+            <span class="kw">let </span>hash = <span class="kw-2">*</span>repl.store.expect_f(<span class="kw-2">*</span>hash);
             <span class="comment">// retrieve from store to persist
             </span><span class="kw">let </span>(secret, fun) = repl
                 .store
@@ -1819,10 +1716,8 @@
             repl.hide(<span class="kw-2">*</span>secret, <span class="kw-2">*</span>fun)
         },
     };
-}
 
-<span class="kw">impl</span>&lt;F: LurkField + DeserializeOwned&gt; MetaCmd&lt;F&gt; {
-    <span class="kw">fn </span>inspect(repl: <span class="kw-2">&amp;mut </span>Repl&lt;F&gt;, args: <span class="kw-2">&amp;</span>Ptr, full: bool) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">fn </span>inspect(repl: <span class="kw-2">&amp;mut </span>Repl&lt;F, C&gt;, args: <span class="kw-2">&amp;</span>Ptr, full: bool) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>first = repl.peek1(args)<span class="question-mark">?</span>;
         <span class="kw">let </span>proof_id = repl.get_string(<span class="kw-2">&amp;</span>first)<span class="question-mark">?</span>;
         LurkProofMeta::&lt;F&gt;::inspect_proof(
@@ -1832,7 +1727,7 @@
         )
     }
 
-    <span class="kw">const </span>INSPECT: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>INSPECT: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"inspect"</span>,
         summary: <span class="string">"Print part of a proof claim"</span>,
         format: <span class="string">"!(inspect &lt;string&gt;)"</span>,
@@ -1845,10 +1740,8 @@
             <span class="self">Self</span>::inspect(repl, args, <span class="bool-val">false</span>)
         }
     };
-}
 
-<span class="kw">impl</span>&lt;F: LurkField + DeserializeOwned&gt; MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>INSPECT_FULL: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>INSPECT_FULL: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"inspect-full"</span>,
         summary: <span class="string">"Print a proof claim"</span>,
         format: <span class="string">"!(inspect-full &lt;string&gt;)"</span>,
@@ -1861,36 +1754,8 @@
             <span class="self">Self</span>::inspect(repl, args, <span class="bool-val">true</span>)
         }
     };
-}
 
-<span class="attr">#[derive(Serialize, Deserialize)]
-</span><span class="kw">struct </span>LurkData&lt;F: LurkField&gt; {
-    z_ptr: ZPtr&lt;F&gt;,
-    z_dag: ZDag&lt;F&gt;,
-}
-
-<span class="kw">impl</span>&lt;F: LurkField&gt; HasFieldModulus <span class="kw">for </span>LurkData&lt;F&gt; {
-    <span class="kw">fn </span>field_modulus() -&gt; String {
-        F::MODULUS.to_string()
-    }
-}
-
-<span class="doccomment">/// Returns a `Utf8PathBuf` from a pointer
-///
-/// # Errors
-/// Errors if a string can't be fetched with the pointer
-</span><span class="kw">fn </span>get_path&lt;F: LurkField&gt;(repl: <span class="kw-2">&amp;</span>Repl&lt;F&gt;, path: <span class="kw-2">&amp;</span>Ptr) -&gt; <span class="prelude-ty">Result</span>&lt;Utf8PathBuf&gt; {
-    <span class="kw">let </span><span class="prelude-val">Some</span>(path) = repl.store.fetch_string(path) <span class="kw">else </span>{
-        <span class="macro">bail!</span>(
-            <span class="string">"Path must be a string. Got {}"</span>,
-            path.fmt_to_string(<span class="kw-2">&amp;</span>repl.store, <span class="kw-2">&amp;</span>repl.state.borrow())
-        )
-    };
-    <span class="prelude-val">Ok</span>(Utf8PathBuf::from(path))
-}
-
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>DUMP_DATA: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>DUMP_DATA: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"dump-data"</span>,
         summary: <span class="string">"Write Lurk data to the file system"</span>,
         format: <span class="string">"!(dump-data &lt;expr&gt; &lt;string&gt;)"</span>,
@@ -1907,10 +1772,8 @@
             dump(LurkData { z_ptr, z_dag }, <span class="kw-2">&amp;</span>path)
         },
     };
-}
 
-<span class="kw">impl</span>&lt;F: LurkField + DeserializeOwned&gt; MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>DEF_LOAD_DATA: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>DEF_LOAD_DATA: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"def-load-data"</span>,
         summary: <span class="string">"Read Lurk data from the file system and bind it to a symbol"</span>,
         format: <span class="string">"!(def-load-data &lt;symbol&gt; &lt;string&gt;)"</span>,
@@ -1932,10 +1795,8 @@
             <span class="prelude-val">Ok</span>(())
         },
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>DEFPROTOCOL: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>DEFPROTOCOL: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"defprotocol"</span>,
         summary: <span class="string">"Defines a protocol"</span>,
         format: <span class="string">"!(defprotocol &lt;symbol&gt; &lt;vars&gt; &lt;body&gt; options...)"</span>,
@@ -1996,7 +1857,7 @@
 
             <span class="kw">let </span>prop_map = repl.get_properties(<span class="kw-2">&amp;</span>props, <span class="kw-2">&amp;</span>[<span class="string">"rc"</span>, <span class="string">"lang"</span>, <span class="string">"description"</span>])<span class="question-mark">?</span>;
 
-            <span class="kw">let </span>get_prop = |key, accepts: <span class="kw">fn</span>(<span class="kw-2">&amp;</span>Ptr) -&gt; bool, def: <span class="kw">fn</span>(<span class="kw-2">&amp;</span>Repl&lt;F&gt;) -&gt; Ptr| -&gt; <span class="prelude-ty">Result</span>&lt;Ptr&gt; {
+            <span class="kw">let </span>get_prop = |key, accepts: <span class="kw">fn</span>(<span class="kw-2">&amp;</span>Ptr) -&gt; bool, def: <span class="kw">fn</span>(<span class="kw-2">&amp;</span>Repl&lt;F, C&gt;) -&gt; Ptr| -&gt; <span class="prelude-ty">Result</span>&lt;Ptr&gt; {
                 <span class="kw">match </span>prop_map.get(key) {
                     <span class="prelude-val">Some</span>(val) =&gt; {
                         <span class="kw">if </span>accepts(val) {
@@ -2035,51 +1896,13 @@
             <span class="prelude-val">Ok</span>(())
         },
     };
-}
 
-<span class="doccomment">/// Contains the data needed for proof validation (according to some protocol)
-/// and verification
-</span><span class="attr">#[non_exhaustive]
-#[derive(Serialize, Deserialize)]
-#[serde(bound(serialize = <span class="string">"F: Serialize"</span>, deserialize = <span class="string">"F: DeserializeOwned"</span>))]
-</span><span class="kw">enum </span>ProtocolProof&lt;
-    <span class="lifetime">'a</span>,
-    F: CurveCycleEquipped,
-    C: Coprocessor&lt;F&gt; + Serialize + DeserializeOwned,
-    M: MultiFrameTrait&lt;<span class="lifetime">'a</span>, F, C&gt;,
-&gt; <span class="kw">where
-    </span>&lt;&lt;E1&lt;F&gt; <span class="kw">as </span>Engine&gt;::Scalar <span class="kw">as </span>ff::PrimeField&gt;::Repr: Abomonation,
-    &lt;&lt;E2&lt;F&gt; <span class="kw">as </span>Engine&gt;::Scalar <span class="kw">as </span>ff::PrimeField&gt;::Repr: Abomonation,
-{
-    Nova {
-        args: LurkData&lt;F&gt;,
-        proof: nova::Proof&lt;<span class="lifetime">'a</span>, F, C, M&gt;,
-        num_steps: usize,
-    },
-}
-
-<span class="kw">impl</span>&lt;
-        <span class="lifetime">'a</span>,
-        F: CurveCycleEquipped,
-        C: Coprocessor&lt;F&gt; + <span class="lifetime">'a </span>+ Serialize + DeserializeOwned,
-        M: MultiFrameTrait&lt;<span class="lifetime">'a</span>, F, C&gt;,
-    &gt; HasFieldModulus <span class="kw">for </span>ProtocolProof&lt;<span class="lifetime">'a</span>, F, C, M&gt;
-<span class="kw">where
-    </span>&lt;&lt;E1&lt;F&gt; <span class="kw">as </span>Engine&gt;::Scalar <span class="kw">as </span>ff::PrimeField&gt;::Repr: Abomonation,
-    &lt;&lt;E2&lt;F&gt; <span class="kw">as </span>Engine&gt;::Scalar <span class="kw">as </span>ff::PrimeField&gt;::Repr: Abomonation,
-{
-    <span class="kw">fn </span>field_modulus() -&gt; String {
-        F::MODULUS.to_owned()
-    }
-}
-
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
     <span class="doccomment">/// Returns the protocol function and reduction count
     ///
     /// # Errors
     /// * If the protocol evaluation fails
     /// * If the reduction count is not a number or can't be converted to `u64`
-    </span><span class="kw">fn </span>get_fun_and_rc(repl: <span class="kw-2">&amp;</span>Repl&lt;F&gt;, ptcl: Ptr) -&gt; <span class="prelude-ty">Result</span>&lt;(Ptr, usize)&gt; {
+    </span><span class="kw">fn </span>get_fun_and_rc(repl: <span class="kw-2">&amp;</span>Repl&lt;F, C&gt;, ptcl: Ptr) -&gt; <span class="prelude-ty">Result</span>&lt;(Ptr, usize)&gt; {
         <span class="kw">let </span>(io, ..) = repl
             .eval_expr(ptcl)
             .with_context(|| <span class="string">"evaluating protocol"</span>)<span class="question-mark">?</span>;
@@ -2087,10 +1910,11 @@
 
         <span class="kw">let </span>(fun, rest) = repl.store.car_cdr(ptcl)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>(Ptr::Atom(Tag::Expr(ExprTag::Num), rc_idx), <span class="kw">_</span>) = repl.store.car_cdr(<span class="kw-2">&amp;</span>rest)<span class="question-mark">? </span><span class="kw">else </span>{
+        <span class="kw">let </span>(car, <span class="kw">_</span>) = repl.store.car_cdr(<span class="kw-2">&amp;</span>rest)<span class="question-mark">?</span>;
+        <span class="kw">let </span>(Tag::Expr(ExprTag::Num), RawPtr::Atom(rc_idx)) = car.parts() <span class="kw">else </span>{
             <span class="macro">bail!</span>(<span class="string">"Reduction count must be a Num"</span>)
         };
-        <span class="kw">let </span><span class="prelude-val">Some</span>(rc) = repl.store.expect_f(rc_idx).to_u64().map(|u| u <span class="kw">as </span>usize) <span class="kw">else </span>{
+        <span class="kw">let </span><span class="prelude-val">Some</span>(rc) = repl.store.expect_f(<span class="kw-2">*</span>rc_idx).to_u64().map(|u| u <span class="kw">as </span>usize) <span class="kw">else </span>{
             <span class="macro">bail!</span>(<span class="string">"Invalid value for reduction count"</span>)
         };
         <span class="prelude-val">Ok</span>((fun, rc))
@@ -2100,7 +1924,7 @@
     ///
     /// # Errors
     /// Errors if the the list of arguments is not proper
-    </span><span class="kw">fn </span>get_args_vec(repl: <span class="kw-2">&amp;</span>Repl&lt;F&gt;, args: <span class="kw-2">&amp;</span>Ptr) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Ptr&gt;&gt; {
+    </span><span class="kw">fn </span>get_args_vec(repl: <span class="kw-2">&amp;</span>Repl&lt;F, C&gt;, args: <span class="kw-2">&amp;</span>Ptr) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Ptr&gt;&gt; {
         <span class="kw">let </span><span class="prelude-val">Some</span>((args_vec, <span class="prelude-val">None</span>)) = repl.store.fetch_list(args) <span class="kw">else </span>{
             <span class="macro">bail!</span>(<span class="string">"Protocol arguments must be a list"</span>)
         };
@@ -2118,7 +1942,7 @@
     /// * If the proof input can't be built (first component of the pair is nil)
     /// * If the proof input is not a list with length 6
     </span><span class="kw">fn </span>get_cek_io_and_post_verify_fn(
-        repl: <span class="kw-2">&amp;</span>Repl&lt;F&gt;,
+        repl: <span class="kw-2">&amp;</span>Repl&lt;F, C&gt;,
         fun: Ptr,
         args: Ptr,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(Vec&lt;Ptr&gt;, Ptr)&gt; {
@@ -2133,13 +1957,13 @@
             .eval_expr_with_env(apply_call, repl.store.intern_nil())
             .with_context(|| <span class="string">"evaluating protocol function call"</span>)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>Ptr::Tuple2(Tag::Expr(ExprTag::Cons), idx) = <span class="kw-2">&amp;</span>io[<span class="number">0</span>] <span class="kw">else </span>{
+        <span class="kw">let </span>(Tag::Expr(ExprTag::Cons), RawPtr::Hash4(idx)) = <span class="kw-2">&amp;</span>io[<span class="number">0</span>].parts() <span class="kw">else </span>{
             <span class="macro">bail!</span>(
                 <span class="string">"Protocol function must return a pair. Got {}"</span>,
                 io[<span class="number">0</span>].fmt_to_string(<span class="kw-2">&amp;</span>repl.store, <span class="kw-2">&amp;</span>repl.state.borrow())
             )
         };
-        <span class="kw">let </span>(pre_verify, post_verify) = repl.store.fetch_2_ptrs(<span class="kw-2">*</span>idx).unwrap();
+        <span class="kw">let </span>[pre_verify, post_verify] = <span class="kw-2">&amp;</span><span class="macro">expect_ptrs!</span>(repl.store, <span class="number">2</span>, <span class="kw-2">*</span>idx);
 
         <span class="kw">if </span>pre_verify.is_nil() {
             <span class="macro">bail!</span>(<span class="string">"Pre-verification predicate rejected the input"</span>)
@@ -2160,7 +1984,7 @@
     /// * If the predicate is not a function
     /// * If the predicate evaluation fails
     /// * If the predicate rejects the proof (evaluation returns nil)
-    </span><span class="kw">fn </span>post_verify_check(repl: <span class="kw-2">&amp;</span>Repl&lt;F&gt;, post_verify: Ptr) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    </span><span class="kw">fn </span>post_verify_check(repl: <span class="kw-2">&amp;</span>Repl&lt;F, C&gt;, post_verify: Ptr) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">if </span>!post_verify.is_nil() {
             <span class="kw">let </span>call = repl.store.list(<span class="macro">vec!</span>[post_verify]);
             <span class="kw">let </span>(io, ..) = repl
@@ -2178,7 +2002,7 @@
     ///
     /// # Errors
     /// Errors if the continuation specifier does not represent a valid continuation
-    </span><span class="kw">fn </span>get_cont_ptr(repl: <span class="kw-2">&amp;</span>Repl&lt;F&gt;, cont_key: <span class="kw-2">&amp;</span>Ptr) -&gt; <span class="prelude-ty">Result</span>&lt;Ptr&gt; {
+    </span><span class="kw">fn </span>get_cont_ptr(repl: <span class="kw-2">&amp;</span>Repl&lt;F, C&gt;, cont_key: <span class="kw-2">&amp;</span>Ptr) -&gt; <span class="prelude-ty">Result</span>&lt;Ptr&gt; {
         <span class="kw">let </span>store = <span class="kw-2">&amp;</span>repl.store;
         <span class="kw">if </span>cont_key == <span class="kw-2">&amp;</span>store.key(<span class="string">"outermost"</span>) {
             <span class="prelude-val">Ok</span>(store.cont_outermost())
@@ -2194,7 +2018,7 @@
         }
     }
 
-    <span class="kw">const </span>PROVE_PROTOCOL: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>PROVE_PROTOCOL: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"prove-protocol"</span>,
         summary: <span class="string">"Creates a proof for a protocol"</span>,
         format: <span class="string">"!(prove-protocol &lt;protocol&gt; &lt;string&gt; args...)"</span>,
@@ -2241,14 +2065,16 @@
 
             <span class="self">Self</span>::post_verify_check(repl, post_verify)<span class="question-mark">?</span>;
 
-            <span class="kw">let </span>(frames, iterations) = evaluate_with_env_and_cont::&lt;F, Coproc&lt;F&gt;&gt;(
-                <span class="prelude-val">None</span>,
+            <span class="kw">let </span>frames = evaluate_with_env_and_cont::&lt;F, C&gt;(
+                <span class="prelude-val">Some</span>(repl.lang_setup()),
                 cek_io[<span class="number">0</span>],
                 cek_io[<span class="number">1</span>],
                 <span class="self">Self</span>::get_cont_ptr(repl, <span class="kw-2">&amp;</span>cek_io[<span class="number">2</span>])<span class="question-mark">?</span>,
                 <span class="kw-2">&amp;</span>repl.store,
                 repl.limit,
             )<span class="question-mark">?</span>;
+
+            <span class="kw">let </span>iterations = frames.len();
 
             {
                 <span class="comment">// making sure the output matches expectation before proving
@@ -2265,34 +2091,17 @@
             <span class="kw">let </span><span class="kw-2">mut </span>z_dag = ZDag::default();
             <span class="kw">let </span>z_ptr = z_dag.populate_with(<span class="kw-2">&amp;</span>args, <span class="kw-2">&amp;</span>repl.store, <span class="kw-2">&amp;mut </span>Default::default());
             <span class="kw">let </span>args = LurkData { z_ptr, z_dag };
-            <span class="kw">match </span>load::&lt;LurkProof&lt;<span class="lifetime">'_</span>, <span class="kw">_</span>, <span class="kw">_</span>, MultiFrame&lt;<span class="lifetime">'_</span>, <span class="kw">_</span>, Coproc&lt;F&gt;&gt;&gt;&gt;(<span class="kw-2">&amp;</span>proof_path(
-                <span class="kw-2">&amp;</span>proof_key,
-            ))<span class="question-mark">? </span>{
-                LurkProof::Nova {
-                    proof,
-                    public_inputs: <span class="kw">_</span>,
-                    public_outputs: <span class="kw">_</span>,
-                    num_steps,
-                    ..
-                } =&gt; {
-                    dump(
-                        ProtocolProof::Nova {
-                            args,
-                            proof,
-                            num_steps,
-                        },
-                        <span class="kw-2">&amp;</span>path,
-                    )<span class="question-mark">?</span>;
+            <span class="kw">match </span>load::&lt;LurkProof&lt;<span class="lifetime">'_</span>, <span class="kw">_</span>, <span class="kw">_</span>, MultiFrame&lt;<span class="lifetime">'_</span>, <span class="kw">_</span>, C&gt;&gt;&gt;(<span class="kw-2">&amp;</span>proof_path(<span class="kw-2">&amp;</span>proof_key))<span class="question-mark">? </span>{
+                LurkProof::Nova { proof, .. } =&gt; {
+                    dump(ProtocolProof::Nova { args, proof }, <span class="kw-2">&amp;</span>path)<span class="question-mark">?</span>;
                     <span class="macro">println!</span>(<span class="string">"Protocol proof saved at {path}"</span>);
                     <span class="prelude-val">Ok</span>(())
                 }
             }
         },
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>VERIFY_PROTOCOL: MetaCmd&lt;F&gt; = MetaCmd {
+    <span class="kw">const </span>VERIFY_PROTOCOL: MetaCmd&lt;F, C&gt; = MetaCmd {
         name: <span class="string">"verify-protocol"</span>,
         summary: <span class="string">"Verifies a proof for a protocol"</span>,
         format: <span class="string">"!(verify-protocol &lt;protocol&gt; &lt;string&gt;)"</span>,
@@ -2312,11 +2121,10 @@
 
             <span class="kw">let </span>(fun, proto_rc) = <span class="self">Self</span>::get_fun_and_rc(repl, ptcl)<span class="question-mark">?</span>;
 
-            <span class="kw">match </span>load::&lt;ProtocolProof&lt;<span class="lifetime">'_</span>, <span class="kw">_</span>, <span class="kw">_</span>, MultiFrame&lt;<span class="lifetime">'_</span>, <span class="kw">_</span>, Coproc&lt;F&gt;&gt;&gt;&gt;(<span class="kw-2">&amp;</span>path)<span class="question-mark">? </span>{
+            <span class="kw">match </span>load::&lt;ProtocolProof&lt;<span class="lifetime">'_</span>, <span class="kw">_</span>, <span class="kw">_</span>, MultiFrame&lt;<span class="lifetime">'_</span>, <span class="kw">_</span>, C&gt;&gt;&gt;(<span class="kw-2">&amp;</span>path)<span class="question-mark">? </span>{
                 ProtocolProof::Nova {
                     args: LurkData { z_ptr, z_dag },
                     proof,
-                    num_steps,
                 } =&gt; {
                     <span class="kw">let </span>args =
                         z_dag.populate_store(<span class="kw-2">&amp;</span>z_ptr, <span class="kw-2">&amp;</span>repl.store, <span class="kw-2">&amp;mut </span>Default::default())<span class="question-mark">?</span>;
@@ -2335,7 +2143,6 @@
                         <span class="kw-2">&amp;</span>pp,
                         <span class="kw-2">&amp;</span>repl.store.to_scalar_vector(<span class="kw-2">&amp;</span>cek_io[..<span class="number">3</span>]),
                         <span class="kw-2">&amp;</span>repl.store.to_scalar_vector(<span class="kw-2">&amp;</span>cek_io[<span class="number">3</span>..]),
-                        num_steps,
                     )<span class="question-mark">? </span>{
                         <span class="macro">bail!</span>(<span class="string">"Proof verification failed"</span>)
                     }
@@ -2347,10 +2154,8 @@
             }
         },
     };
-}
 
-<span class="kw">impl </span>MetaCmd&lt;F&gt; {
-    <span class="kw">const </span>CMDS: [MetaCmd&lt;F&gt;; <span class="number">28</span>] = [
+    <span class="kw">const </span>CMDS: [MetaCmd&lt;F, C&gt;; <span class="number">28</span>] = [
         MetaCmd::LOAD,
         MetaCmd::DEF,
         MetaCmd::DEFREC,
@@ -2381,8 +2186,72 @@
         MetaCmd::VERIFY_PROTOCOL,
     ];
 
-    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>cmds() -&gt; std::collections::HashMap&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, MetaCmd&lt;F&gt;&gt; {
+    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>cmds() -&gt; std::collections::HashMap&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, MetaCmd&lt;F, C&gt;&gt; {
         HashMap::from(<span class="self">Self</span>::CMDS.map(|x| (x.name, x)))
+    }
+}
+
+<span class="attr">#[derive(Serialize, Deserialize)]
+</span><span class="kw">struct </span>LurkData&lt;F: LurkField&gt; {
+    z_ptr: ZPtr&lt;F&gt;,
+    z_dag: ZDag&lt;F&gt;,
+}
+
+<span class="kw">impl</span>&lt;F: LurkField&gt; HasFieldModulus <span class="kw">for </span>LurkData&lt;F&gt; {
+    <span class="kw">fn </span>field_modulus() -&gt; String {
+        F::MODULUS.to_string()
+    }
+}
+
+<span class="doccomment">/// Returns a `Utf8PathBuf` from a pointer
+///
+/// # Errors
+/// Errors if a string can't be fetched with the pointer
+</span><span class="kw">fn </span>get_path&lt;F: LurkField, C: Coprocessor&lt;F&gt; + Serialize + DeserializeOwned&gt;(
+    repl: <span class="kw-2">&amp;</span>Repl&lt;F, C&gt;,
+    path: <span class="kw-2">&amp;</span>Ptr,
+) -&gt; <span class="prelude-ty">Result</span>&lt;Utf8PathBuf&gt; {
+    <span class="kw">let </span><span class="prelude-val">Some</span>(path) = repl.store.fetch_string(path) <span class="kw">else </span>{
+        <span class="macro">bail!</span>(
+            <span class="string">"Path must be a string. Got {}"</span>,
+            path.fmt_to_string(<span class="kw-2">&amp;</span>repl.store, <span class="kw-2">&amp;</span>repl.state.borrow())
+        )
+    };
+    <span class="prelude-val">Ok</span>(Utf8PathBuf::from(path))
+}
+
+<span class="doccomment">/// Contains the data needed for proof validation (according to some protocol)
+/// and verification
+</span><span class="attr">#[non_exhaustive]
+#[derive(Serialize, Deserialize)]
+#[serde(bound(serialize = <span class="string">"F: Serialize"</span>, deserialize = <span class="string">"F: DeserializeOwned"</span>))]
+</span><span class="kw">enum </span>ProtocolProof&lt;
+    <span class="lifetime">'a</span>,
+    F: CurveCycleEquipped,
+    C: Coprocessor&lt;F&gt; + Serialize + DeserializeOwned,
+    M: MultiFrameTrait&lt;<span class="lifetime">'a</span>, F, C&gt;,
+&gt; <span class="kw">where
+    </span>&lt;&lt;E1&lt;F&gt; <span class="kw">as </span>Engine&gt;::Scalar <span class="kw">as </span>ff::PrimeField&gt;::Repr: Abomonation,
+    &lt;&lt;E2&lt;F&gt; <span class="kw">as </span>Engine&gt;::Scalar <span class="kw">as </span>ff::PrimeField&gt;::Repr: Abomonation,
+{
+    Nova {
+        args: LurkData&lt;F&gt;,
+        proof: nova::Proof&lt;<span class="lifetime">'a</span>, F, C, M&gt;,
+    },
+}
+
+<span class="kw">impl</span>&lt;
+        <span class="lifetime">'a</span>,
+        F: CurveCycleEquipped,
+        C: Coprocessor&lt;F&gt; + <span class="lifetime">'a </span>+ Serialize + DeserializeOwned,
+        M: MultiFrameTrait&lt;<span class="lifetime">'a</span>, F, C&gt;,
+    &gt; HasFieldModulus <span class="kw">for </span>ProtocolProof&lt;<span class="lifetime">'a</span>, F, C, M&gt;
+<span class="kw">where
+    </span>&lt;&lt;E1&lt;F&gt; <span class="kw">as </span>Engine&gt;::Scalar <span class="kw">as </span>ff::PrimeField&gt;::Repr: Abomonation,
+    &lt;&lt;E2&lt;F&gt; <span class="kw">as </span>Engine&gt;::Scalar <span class="kw">as </span>ff::PrimeField&gt;::Repr: Abomonation,
+{
+    <span class="kw">fn </span>field_modulus() -&gt; String {
+        F::MODULUS.to_owned()
     }
 }
 </code></pre></div></section></main></body></html>
