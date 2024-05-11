@@ -19,8 +19,8 @@ use crate::field::LurkField;
 use crate::uint::UInt;
 
 /// Finite field element type for Lurk. Has different internal representations to optimize evaluation.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Num<F: LurkField> {
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum Num<F> {
     /// a scalar field element in full field representation
     Scalar(F),
     /// a small scalar field element in U64 representation for convenience
@@ -40,8 +40,6 @@ impl<Fr: LurkField> Arbitrary for Num<Fr> {
         .boxed()
     }
 }
-
-impl<F: LurkField> Copy for Num<F> {}
 
 impl<F: LurkField> Display for Num<F> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

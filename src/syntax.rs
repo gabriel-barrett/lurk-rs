@@ -11,7 +11,7 @@ use proptest::prelude::*;
 
 /// Lurk's syntax for parsing
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Syntax<F: LurkField> {
+pub enum Syntax<F> {
     /// An element of the finite field `F`
     Num(Pos, Num<F>),
     /// A u64 integer: 1u64, 0xffu64
@@ -30,7 +30,7 @@ pub enum Syntax<F: LurkField> {
     Improper(Pos, Vec<Syntax<F>>, Box<Syntax<F>>),
 }
 
-impl<F: LurkField> Syntax<F> {
+impl<F> Syntax<F> {
     /// Retrieves the `Pos` attribute
     pub fn get_pos(&self) -> &Pos {
         match self {

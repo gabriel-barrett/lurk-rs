@@ -3,7 +3,6 @@
 ////! which licensed under the following MIT license:
 ////! https://github.com/Geal/nom/blob/master/LICENSE
 
-use crate::field::LurkField;
 use nom::{
     branch::alt,
     bytes::complete::{is_not, take_while_m_n},
@@ -22,7 +21,7 @@ use crate::parser::{
 /// Parse a unicode sequence, of the form u{XXXX}, where XXXX is 1 to 6
 /// hexadecimal numerals. We will combine this later with parse_escaped_char
 /// to parse sequences like \u{00AC}.
-pub fn parse_unicode<'a, F: LurkField>() -> impl Fn(Span<'a>) -> ParseResult<'a, F, char> {
+pub fn parse_unicode<'a, F>() -> impl Fn(Span<'a>) -> ParseResult<'a, F, char> {
     move |from: Span<'a>| {
         let (i, hex) = preceded(
             char('u'),
@@ -44,7 +43,7 @@ pub fn parse_unicode<'a, F: LurkField>() -> impl Fn(Span<'a>) -> ParseResult<'a,
 }
 
 /// Parse an escaped character: \n, \t, \r, \u{00AC}, etc.
-pub fn parse_escaped_char<'a, F: LurkField>(
+pub fn parse_escaped_char<'a, F>(
     delim: char,
     must_escape: &'static str,
 ) -> impl Fn(Span<'a>) -> ParseResult<'a, F, char> {
@@ -70,13 +69,12 @@ pub fn parse_escaped_char<'a, F: LurkField>(
 
 /// Parse a backslash, followed by any amount of whitespace. This is used
 /// later to discard any escaped whitespace.
-pub fn parse_escaped_whitespace<'a, F: LurkField>(
-) -> impl Fn(Span<'a>) -> ParseResult<'a, F, Span<'a>> {
+pub fn parse_escaped_whitespace<'a, F>() -> impl Fn(Span<'a>) -> ParseResult<'a, F, Span<'a>> {
     move |from: Span<'a>| preceded(char('\\'), multispace1)(from)
 }
 
 ///// Parse a non-empty block of text that doesn't include \ or delim
-pub fn parse_literal<'a, F: LurkField>(
+pub fn parse_literal<'a, F>(
     delim: char,
     whitespace: bool,
     must_escape: &'static str,
@@ -107,7 +105,7 @@ pub enum StringFragment<'a> {
 
 /// Combine parse_literal, parse_escaped_whitespace, and parse_escaped_char
 /// into a StringFragment.
-pub fn parse_fragment<'a, F: LurkField>(
+pub fn parse_fragment<'a, F>(
     delim: char,
     whitespace: bool,
     must_escape: &'static str,
@@ -142,7 +140,7 @@ pub fn parse_fragment<'a, F: LurkField>(
 
 /// Parse a non-empty string. Use a loop of parse_fragment and push all of the fragments
 /// into an output string.
-pub fn parse_string_inner1<'a, F: LurkField>(
+pub fn parse_string_inner1<'a, F>(
     delim: char,
     whitespace: bool,
     must_escape: &'static str,
@@ -165,7 +163,7 @@ pub fn parse_string_inner1<'a, F: LurkField>(
 
 /// Parse a string. Use a loop of parse_fragment and push all of the fragments
 /// into an output string.
-pub fn parse_string_inner<'a, F: LurkField>(
+pub fn parse_string_inner<'a, F>(
     delim: char,
     whitespace: bool,
     must_escape: &'static str,
@@ -187,9 +185,7 @@ pub fn parse_string_inner<'a, F: LurkField>(
 }
 
 /// Parse a string with the outer delimiter characters
-pub fn parse_string<'a, F: LurkField>(
-    delim: char,
-) -> impl Fn(Span<'a>) -> ParseResult<'a, F, String> {
+pub fn parse_string<'a, F>(delim: char) -> impl Fn(Span<'a>) -> ParseResult<'a, F, String> {
     move |from: Span<'a>| {
         delimited(
             char(delim),

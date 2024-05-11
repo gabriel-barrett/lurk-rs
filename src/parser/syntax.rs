@@ -25,24 +25,24 @@ use crate::{
     uint::UInt,
 };
 
-pub fn parse_line_comment<F: LurkField>(i: Span<'_>) -> ParseResult<'_, F, Span<'_>> {
+pub fn parse_line_comment<F>(i: Span<'_>) -> ParseResult<'_, F, Span<'_>> {
     let (i, _) = tag(";")(i)?;
     let (i, com) = take_till(|c| c == '\n')(i)?;
     Ok((i, com))
 }
-pub fn parse_space<F: LurkField>(i: Span<'_>) -> ParseResult<'_, F, Vec<Span<'_>>> {
+pub fn parse_space<F>(i: Span<'_>) -> ParseResult<'_, F, Vec<Span<'_>>> {
     let (i, _) = multispace0(i)?;
     let (i, com) = many0(terminated(parse_line_comment, multispace1))(i)?;
     Ok((i, com))
 }
 
-pub fn parse_space1<F: LurkField>(i: Span<'_>) -> ParseResult<'_, F, Vec<Span<'_>>> {
+pub fn parse_space1<F>(i: Span<'_>) -> ParseResult<'_, F, Vec<Span<'_>>> {
     let (i, _) = multispace1(i)?;
     let (i, com) = many0(terminated(parse_line_comment, multispace1))(i)?;
     Ok((i, com))
 }
 
-pub fn parse_symbol_limb<F: LurkField>(
+pub fn parse_symbol_limb<F>(
     escape: &'static str,
 ) -> impl Fn(Span<'_>) -> ParseResult<'_, F, String> {
     move |from: Span<'_>| {
@@ -59,7 +59,7 @@ pub fn parse_symbol_limb<F: LurkField>(
     }
 }
 
-pub fn parse_symbol_limb_raw<F: LurkField>(
+pub fn parse_symbol_limb_raw<F>(
     escape: &'static str,
 ) -> impl Fn(Span<'_>) -> ParseResult<'_, F, String> {
     move |from: Span<'_>| {
@@ -76,7 +76,7 @@ pub fn parse_symbol_limb_raw<F: LurkField>(
     }
 }
 
-pub fn parse_symbol_limbs<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Vec<String>> {
+pub fn parse_symbol_limbs<F>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Vec<String>> {
     move |from: Span<'_>| {
         let (i, path) = separated_list1(
             char(symbol::SYM_SEPARATOR),
@@ -87,7 +87,7 @@ pub fn parse_symbol_limbs<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_
     }
 }
 
-fn intern_path<'a, F: LurkField>(
+fn intern_path<'a, F>(
     state: &StateRcCell,
     upto: LocatedSpan<&'a str>,
     path: &[String],
@@ -112,7 +112,7 @@ fn intern_path<'a, F: LurkField>(
     })
 }
 
-pub fn parse_absolute_symbol<F: LurkField>(
+pub fn parse_absolute_symbol<F>(
     state: StateRcCell,
     create_unknown_packages: bool,
 ) -> impl Fn(Span<'_>) -> ParseResult<'_, F, SymbolRef> {
@@ -126,7 +126,7 @@ pub fn parse_absolute_symbol<F: LurkField>(
     }
 }
 
-pub fn parse_relative_symbol<F: LurkField>(
+pub fn parse_relative_symbol<F>(
     state: StateRcCell,
     create_unknown_packages: bool,
 ) -> impl Fn(Span<'_>) -> ParseResult<'_, F, SymbolRef> {
@@ -137,7 +137,7 @@ pub fn parse_relative_symbol<F: LurkField>(
     }
 }
 
-pub fn parse_raw_symbol<F: LurkField>(
+pub fn parse_raw_symbol<F>(
     state: StateRcCell,
     create_unknown_packages: bool,
 ) -> impl Fn(Span<'_>) -> ParseResult<'_, F, SymbolRef> {
@@ -150,7 +150,7 @@ pub fn parse_raw_symbol<F: LurkField>(
     }
 }
 
-pub fn parse_raw_keyword<F: LurkField>(
+pub fn parse_raw_keyword<F>(
     state: StateRcCell,
     create_unknown_packages: bool,
 ) -> impl Fn(Span<'_>) -> ParseResult<'_, F, SymbolRef> {
@@ -167,7 +167,7 @@ pub fn parse_raw_keyword<F: LurkField>(
 /// absolute: .foo.bar.baz, :foo.bar (escaped limbs: .|foo|.|bar|.|baz|)
 /// raw: ~(foo bar baz) = .baz.bar.foo
 /// raw keyword: ~:(foo bar) = :bar.foo
-pub fn parse_symbol<F: LurkField>(
+pub fn parse_symbol<F>(
     state: StateRcCell,
     create_unknown_packages: bool,
 ) -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>> {
@@ -182,7 +182,7 @@ pub fn parse_symbol<F: LurkField>(
     }
 }
 
-pub fn parse_numeric_suffix<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Span<'_>> {
+pub fn parse_numeric_suffix<F>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Span<'_>> {
     move |from: Span<'_>| {
         let (upto, suffix) = alt((
             tag("u8"),
@@ -314,7 +314,7 @@ fn f_from_be_bytes<F: LurkField>(bs: &[u8]) -> F {
     res
 }
 
-pub fn parse_string<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>> {
+pub fn parse_string<F>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>> {
     move |from: Span<'_>| {
         let (upto, s) = string::parse_string('"')(from)?;
         let pos = Pos::from_upto(from, upto);
@@ -323,7 +323,7 @@ pub fn parse_string<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, S
 }
 
 // hash syntax for chars
-pub fn parse_hash_char<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>> {
+pub fn parse_hash_char<F>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>> {
     |from: Span<'_>| {
         let (i, _) = tag("#\\")(from)?;
         let (upto, c) = alt((string::parse_unicode(), anychar))(i)?;
@@ -332,7 +332,7 @@ pub fn parse_hash_char<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_, F
     }
 }
 
-pub fn parse_char<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>> {
+pub fn parse_char<F>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>> {
     move |from: Span<'_>| {
         let (i, _) = tag("'")(from)?;
         let (i, s) = string::parse_string_inner1('\'', true, "()'")(i)?;

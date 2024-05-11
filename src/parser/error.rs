@@ -1,12 +1,11 @@
 use std::{cmp::Ordering, fmt, fmt::Write, num::ParseIntError, string::String};
 
-use crate::field::LurkField;
 use nom::{error::ErrorKind, AsBytes, Err, IResult, InputLength};
 
 use crate::parser::{base, Span};
 
 #[derive(PartialEq, Eq, Debug, Clone)]
-pub enum ParseErrorKind<F: LurkField> {
+pub enum ParseErrorKind<F> {
     InvalidBase16EscapeSequence(String, Option<ParseIntError>),
     InvalidBaseEncoding(base::LitBase),
     NumError(String),
@@ -19,7 +18,7 @@ pub enum ParseErrorKind<F: LurkField> {
     Custom(String),
 }
 
-impl<F: LurkField> fmt::Display for ParseErrorKind<F> {
+impl<F: fmt::Debug> fmt::Display for ParseErrorKind<F> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::InvalidBase16EscapeSequence(seq, _) => {
@@ -36,20 +35,20 @@ impl<F: LurkField> fmt::Display for ParseErrorKind<F> {
     }
 }
 
-impl<F: LurkField> ParseErrorKind<F> {
+impl<F> ParseErrorKind<F> {
     pub fn is_nom_err(&self) -> bool {
         matches!(self, Self::Nom(_))
     }
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]
-pub struct ParseError<I: AsBytes, F: LurkField> {
+pub struct ParseError<I: AsBytes, F> {
     pub input: I,
     pub expected: Option<&'static str>,
     pub errors: Vec<ParseErrorKind<F>>,
 }
 
-impl<I: AsBytes, F: LurkField> ParseError<I, F> {
+impl<I: AsBytes, F> ParseError<I, F> {
     pub fn new(input: I, error: ParseErrorKind<F>) -> Self {
         ParseError {
             input,
@@ -81,7 +80,7 @@ impl<I: AsBytes, F: LurkField> ParseError<I, F> {
     }
 }
 
-impl<'a, F: LurkField> fmt::Display for ParseError<Span<'a>, F> {
+impl<'a, F: fmt::Debug> fmt::Display for ParseError<Span<'a>, F> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut res = String::new();
 
@@ -122,7 +121,7 @@ impl<'a, F: LurkField> fmt::Display for ParseError<Span<'a>, F> {
     }
 }
 
-impl<I: AsBytes, F: LurkField> nom::error::ParseError<I> for ParseError<I, F>
+impl<I: AsBytes, F> nom::error::ParseError<I> for ParseError<I, F>
 where
     I: InputLength,
 {
@@ -155,7 +154,7 @@ where
     }
 }
 
-impl<I: AsBytes, F: LurkField> nom::error::ContextError<I> for ParseError<I, F>
+impl<I: AsBytes, F> nom::error::ContextError<I> for ParseError<I, F>
 where
     I: InputLength,
 {
@@ -179,7 +178,7 @@ where
     }
 }
 
-pub fn map_parse_err<I: AsBytes, F: LurkField, A, Fun: Fn(ParseError<I, F>) -> ParseError<I, F>>(
+pub fn map_parse_err<I: AsBytes, F, A, Fun: Fn(ParseError<I, F>) -> ParseError<I, F>>(
     x: IResult<I, A, ParseError<I, F>>,
     f: Fun,
 ) -> IResult<I, A, ParseError<I, F>> {
