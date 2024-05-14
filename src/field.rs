@@ -9,8 +9,9 @@ use ff::{PrimeField, PrimeFieldBits};
 use halo2curves::bn256::Fr as Bn256Scalar;
 use halo2curves::grumpkin::Fr as GrumpkinScalar;
 use serde::{Deserialize, Serialize};
-use std::convert::TryFrom;
 use std::hash::Hash;
+use std::ops::{MulAssign, SubAssign};
+use std::{convert::TryFrom, ops::AddAssign};
 
 #[cfg(not(target_arch = "wasm32"))]
 use lurk_macros::serde_test;
@@ -57,6 +58,28 @@ impl std::fmt::Display for LanguageField {
             Self::BN256 => write!(f, "bn256"),
             Self::Grumpkin => write!(f, "grumpkin"),
         }
+    }
+}
+
+/// A lighter field trait. A bridge between `p3` and `ff` traits
+pub trait NumLike: Copy + Eq + AddAssign + SubAssign + MulAssign {
+    /// Multiplicative inverse
+    fn invert(&self) -> Option<Self>
+    where
+        Self: Sized;
+    /// Try from u64
+    fn try_from_u64(x: u64) -> Option<Self>
+    where
+        Self: Sized;
+    /// Try into u64
+    fn try_into_u64(self) -> Option<u64>;
+    /// From u64. May panic
+    fn from_u64(x: u64) -> Self {
+        Self::try_from_u64(x).unwrap()
+    }
+    /// Into u64. May panic
+    fn into_u64(self) -> u64 {
+        self.try_into_u64().unwrap()
     }
 }
 
@@ -259,6 +282,18 @@ pub trait LurkField: PrimeField + PrimeFieldBits {
     /// Returns the LanguageField of the field
     fn get_field(&self) -> LanguageField {
         Self::FIELD
+    }
+}
+
+impl<F: LurkField> NumLike for F {
+    fn invert(&self) -> Option<Self> {
+        self.invert().into()
+    }
+    fn try_from_u64(x: u64) -> Option<Self> {
+        Some(LurkField::from_u64(x))
+    }
+    fn try_into_u64(self) -> Option<u64> {
+        self.to_u64()
     }
 }
 

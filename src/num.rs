@@ -3,11 +3,11 @@
 //! The `Num` type is an enum that can represent a field element in either full field representation
 //! or in U64 representation. The U64 representation is used for convenience, and is converted to full
 //! field representation when necessary (e.g. overflow).
-use crate::field::FWrap;
+use crate::field::{FWrap, NumLike};
 use serde::{Deserialize, Serialize};
 use std::{
     cmp::Ordering,
-    fmt::Display,
+    fmt::{Debug, Display},
     hash::Hash,
     ops::{AddAssign, DivAssign, MulAssign, SubAssign},
 };
@@ -87,14 +87,19 @@ impl<F: LurkField> PartialOrd for Num<F> {
     }
 }
 
-impl<F: LurkField> AddAssign for Num<F> {
+impl<F> AddAssign for Num<F>
+where
+    F: NumLike,
+{
     fn add_assign(&mut self, rhs: Self) {
         match (*self, rhs) {
             (Num::U64(ref mut a), Num::U64(b)) => {
                 *self = if let Some(res) = a.checked_add(b) {
                     Num::U64(res)
                 } else {
-                    Num::Scalar(F::from(*a) + F::from(b))
+                    let mut res = F::from_u64(*a);
+                    res += F::from_u64(b);
+                    Num::Scalar(res)
                 };
             }
             (Num::Scalar(ref mut a), Num::Scalar(b)) => {
@@ -102,24 +107,31 @@ impl<F: LurkField> AddAssign for Num<F> {
                 *self = Num::Scalar(*a);
             }
             (Num::Scalar(ref mut a), Num::U64(b)) => {
-                *a += F::from(b);
+                *a += F::from_u64(b);
                 *self = Num::Scalar(*a);
             }
             (Num::U64(a), Num::Scalar(b)) => {
-                *self = Num::Scalar(F::from(a) + b);
+                let mut res = F::from_u64(a);
+                res += b;
+                *self = Num::Scalar(res);
             }
         }
     }
 }
 
-impl<F: LurkField> SubAssign for Num<F> {
+impl<F> SubAssign for Num<F>
+where
+    F: NumLike,
+{
     fn sub_assign(&mut self, rhs: Self) {
         match (*self, rhs) {
             (Num::U64(ref mut a), Num::U64(b)) => {
                 *self = if let Some(res) = a.checked_sub(b) {
                     Num::U64(res)
                 } else {
-                    Num::Scalar(F::from(*a) - F::from(b))
+                    let mut res = F::from_u64(*a);
+                    res -= F::from_u64(b);
+                    Num::Scalar(res)
                 };
             }
             (Num::Scalar(ref mut a), Num::Scalar(b)) => {
@@ -127,24 +139,31 @@ impl<F: LurkField> SubAssign for Num<F> {
                 *self = Num::Scalar(*a);
             }
             (Num::Scalar(ref mut a), Num::U64(b)) => {
-                *a -= F::from(b);
+                *a -= F::from_u64(b);
                 *self = Num::Scalar(*a);
             }
             (Num::U64(a), Num::Scalar(b)) => {
-                *self = Num::Scalar(F::from(a) - b);
+                let mut res = F::from_u64(a);
+                res -= b;
+                *self = Num::Scalar(res);
             }
         }
     }
 }
 
-impl<F: LurkField> MulAssign for Num<F> {
+impl<F> MulAssign for Num<F>
+where
+    F: NumLike,
+{
     fn mul_assign(&mut self, rhs: Self) {
         match (*self, rhs) {
             (Num::U64(ref mut a), Num::U64(b)) => {
                 *self = if let Some(res) = a.checked_mul(b) {
                     Num::U64(res)
                 } else {
-                    Num::Scalar(F::from(*a) * F::from(b))
+                    let mut res = F::from_u64(*a);
+                    res *= F::from_u64(b);
+                    Num::Scalar(res)
                 };
             }
             (Num::Scalar(ref mut a), Num::Scalar(b)) => {
@@ -152,26 +171,33 @@ impl<F: LurkField> MulAssign for Num<F> {
                 *self = Num::Scalar(*a);
             }
             (Num::Scalar(ref mut a), Num::U64(b)) => {
-                *a *= F::from(b);
+                *a *= F::from_u64(b);
                 *self = Num::Scalar(*a);
             }
             (Num::U64(a), Num::Scalar(b)) => {
-                *self = Num::Scalar(F::from(a) * b);
+                let mut res = F::from_u64(a);
+                res *= b;
+                *self = Num::Scalar(res);
             }
         }
     }
 }
 
-impl<F: LurkField> DivAssign for Num<F> {
+impl<F> DivAssign for Num<F>
+where
+    F: NumLike,
+{
     fn div_assign(&mut self, rhs: Self) {
-        assert!(!rhs.is_zero(), "can not divide by 0");
+        assert!(rhs != Num::Scalar(F::from_u64(0)), "can not divide by 0");
         match (*self, rhs) {
             (Num::U64(ref mut a), Num::U64(b)) => {
                 // The result will only be Num::U64 if b divides a.
                 *self = if *a % b == 0 {
                     Num::U64(*a / b)
                 } else {
-                    Num::Scalar(F::from(*a) * F::from(b).invert().unwrap())
+                    let mut res = F::from_u64(*a);
+                    res *= F::from_u64(b).invert().unwrap();
+                    Num::Scalar(res)
                 };
             }
             (Num::Scalar(ref mut a), Num::Scalar(b)) => {
@@ -179,11 +205,13 @@ impl<F: LurkField> DivAssign for Num<F> {
                 *self = Num::Scalar(*a);
             }
             (Num::Scalar(ref mut a), Num::U64(b)) => {
-                *a *= F::from(b).invert().unwrap();
+                *a *= F::from_u64(b).invert().unwrap();
                 *self = Num::Scalar(*a);
             }
             (Num::U64(a), Num::Scalar(b)) => {
-                *self = Num::Scalar(F::from(a) * b.invert().unwrap());
+                let mut res = F::from_u64(a);
+                res *= b.invert().unwrap();
+                *self = Num::Scalar(res);
             }
         }
     }

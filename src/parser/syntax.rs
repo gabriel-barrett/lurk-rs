@@ -10,7 +10,7 @@ use nom::{
 use nom_locate::LocatedSpan;
 
 use crate::{
-    field::LurkField,
+    field::NumLike,
     num::Num,
     package::SymbolRef,
     parser::{
@@ -201,7 +201,10 @@ pub fn parse_numeric_suffix<F>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Span
     }
 }
 
-pub fn parse_numeric<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>> {
+pub fn parse_numeric<F>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>>
+where
+    F: NumLike,
+{
     move |from: Span<'_>| {
         let (i, neg) = opt(tag("-"))(from)?;
         let (i, base) = alt((
@@ -256,7 +259,7 @@ pub fn parse_numeric<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, 
                 let (_, be_bytes) = be_bytes_from_digits(base, &digits, i)?;
                 let (upto, denom) = opt(base::parse_litbase_digits(base))(upto)?;
                 let f = f_from_be_bytes::<F>(&be_bytes);
-                let num = if let Some(x) = f.to_u64() {
+                let num = if let Some(x) = f.try_into_u64() {
                     Num::U64(x)
                 } else {
                     Num::Scalar(f)
@@ -270,7 +273,7 @@ pub fn parse_numeric<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, 
                 if let Some(denom) = denom {
                     let (_, denom) = be_bytes_from_digits(base, &denom, i)?;
                     let denom_f = f_from_be_bytes::<F>(&denom);
-                    let denom = if let Some(x) = denom_f.to_u64() {
+                    let denom = if let Some(x) = denom_f.try_into_u64() {
                         Num::U64(x)
                     } else {
                         Num::Scalar(denom_f)
@@ -285,7 +288,7 @@ pub fn parse_numeric<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, 
     }
 }
 
-fn be_bytes_from_digits<'a, F: LurkField>(
+fn be_bytes_from_digits<'a, F>(
     base: base::LitBase,
     digits: &str,
     i: Span<'a>,
@@ -299,16 +302,19 @@ fn be_bytes_from_digits<'a, F: LurkField>(
     }?;
     Ok((i, bytes))
 }
-fn f_from_be_bytes<F: LurkField>(bs: &[u8]) -> F {
-    let mut res = F::ZERO;
+fn f_from_be_bytes<F>(bs: &[u8]) -> F
+where
+    F: NumLike,
+{
+    let mut res = F::from_u64(0u64);
     let mut bs = bs.iter().peekable();
     while let Some(b) = bs.next() {
-        let b: F = u64::from(*b).into();
+        let b = F::from_u64(u64::from(*b));
         if bs.peek().is_none() {
             res.add_assign(b)
         } else {
             res.add_assign(b);
-            res.mul_assign(F::from(256u64));
+            res.mul_assign(F::from_u64(256u64));
         }
     }
     res
@@ -348,11 +354,14 @@ pub fn parse_char<F>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>> {
     }
 }
 
-pub fn parse_list<F: LurkField>(
+pub fn parse_list<F>(
     state: StateRcCell,
     meta: bool,
     create_unknown_packages: bool,
-) -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>> {
+) -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>>
+where
+    F: NumLike,
+{
     move |from: Span<'_>| {
         let (i, _) = tag("(")(from)?;
         let (i, xs) = if meta {
@@ -402,10 +411,13 @@ pub fn parse_list<F: LurkField>(
     }
 }
 
-pub fn parse_quote<F: LurkField>(
+pub fn parse_quote<F>(
     state: StateRcCell,
     create_unknown_packages: bool,
-) -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>> {
+) -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>>
+where
+    F: NumLike,
+{
     move |from: Span<'_>| {
         let (i, c) = opt(parse_char())(from)?;
         if let Some(c) = c {
@@ -420,12 +432,15 @@ pub fn parse_quote<F: LurkField>(
 }
 
 // top-level syntax parser
-pub fn parse_syntax<F: LurkField>(
+pub fn parse_syntax<F>(
     state: StateRcCell,
     meta: bool,
     // this parameter triggers a less strict mode for testing purposes
     create_unknown_packages: bool,
-) -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>> {
+) -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>>
+where
+    F: NumLike,
+{
     move |from: Span<'_>| {
         alt((
             context(
@@ -444,10 +459,13 @@ pub fn parse_syntax<F: LurkField>(
     }
 }
 
-pub fn parse_maybe_meta<F: LurkField>(
+pub fn parse_maybe_meta<F>(
     state: StateRcCell,
     create_unknown_packages: bool,
-) -> impl Fn(Span<'_>) -> ParseResult<'_, F, Option<(bool, Syntax<F>)>> {
+) -> impl Fn(Span<'_>) -> ParseResult<'_, F, Option<(bool, Syntax<F>)>>
+where
+    F: NumLike,
+{
     move |from: Span<'_>| {
         let (_, is_eof) = opt(nom::combinator::eof)(from)?;
         if is_eof.is_some() {
@@ -468,7 +486,7 @@ pub mod tests {
     use proptest::prelude::*;
 
     use super::*;
-    use crate::{char, keyword, list, num, state::State, str, symbol, uint};
+    use crate::{char, field::LurkField, keyword, list, num, state::State, str, symbol, uint};
 
     fn test<'a, P, R>(mut p: P, i: &'a str, expected: Option<R>) -> bool
     where
